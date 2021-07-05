@@ -34,24 +34,23 @@ if length(x)==2             % no cost model
     agent.lrate_e = 0.1;
 
 
-elseif length(x)==3         % "best" model
-    agent.m = 2;
-    agent.lrate_theta = x(1);
-    agent.lrate_V = x(2);
-    agent.C = x(3);
-    agent.beta0 = 1;
-    agent.lrate_beta = 1;
+elseif length(x)==3         % reduced fixed model
+    agent.m = 3;
+    agent.C = [];
+    agent.beta0 = x(1);
+    agent.lrate_theta = x(2);
+    agent.lrate_V = x(3);
+    agent.lrate_beta = 0;
     agent.lrate_p = 0;
     agent.lrate_e = 0.1;
 
    
-elseif length(x)==4        % fixed model   THIS ONE PERFORMS BEST FOR NOW
-    agent.m = 3;
-    agent.lrate_theta = x(1);
-    agent.lrate_V = x(2);
-    agent.beta0 = x(3);
-    %agent.C = x(4);
-    %agent.lrate_p = 0;
+elseif length(x)==4        % fixed model   
+    agent.m = 4;
+    agent.C = [];
+    agent.beta0 = x(1);
+    agent.lrate_theta = x(2);
+    agent.lrate_V = x(3);
     agent.lrate_p = x(4);
     agent.lrate_beta = 0;
     agent.lrate_e = 0.1;
@@ -59,35 +58,42 @@ elseif length(x)==4        % fixed model   THIS ONE PERFORMS BEST FOR NOW
     
 elseif length(x)==5          % reduced adaptive model
     agent.m = 5;
-    agent.lrate_theta = x(1);
-    agent.lrate_V = x(2);
-    agent.lrate_beta = x(3);
-    agent.beta0 = x(4);
-    agent.C = x(5);
+    agent.C = x(1);
+    agent.beta0 = x(2);
+    agent.lrate_theta = x(3);
+    agent.lrate_V = x(4);
+    agent.lrate_beta = x(5);
     agent.lrate_p = 0;
     agent.lrate_e = 0.1;
     
 elseif length(x)==6         % adaptive model
     agent.m = 6;
-    agent.lrate_theta = x(1);
-    agent.lrate_V = x(2);
-    agent.lrate_beta = x(3);
-    agent.beta0 = x(4);
-    agent.C = x(5);
+    agent.C = x(1);
+    agent.beta0 = x(2);
+    agent.lrate_theta = x(3);
+    agent.lrate_V = x(4);
+    agent.lrate_beta = x(5);
     agent.lrate_p = x(6);
     agent.lrate_e = 0.1;
 end
 
 
-C = unique(data(1).cond);
+%C = unique(data(1).cond);
+C = {{'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
+     {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
 lik = 0;
+likelih = [];
 
-for c = 1:length(C)
-    ix = find(strcmp(data.cond, C{c}));
+for setId = 1:length(C)
+    ix = [];
+    expCond = C{setId};
+    for c = 1:length(expCond)
+        ix = [ix find(strcmp(data.cond, expCond{c}))'];
+    end
     reward = data.r(ix);
     action = data.a(ix);
     state = data.s(ix);
-    acc = data.acc(ix); 
+    acc = data.acc(ix);
     setsize = length(unique(state));    % number of distinct states
     nA = length(unique(action));        % number of distinct actions
     theta = zeros(setsize,nA);          % policy parameters
@@ -110,6 +116,7 @@ for c = 1:length(C)
         logpolicy = d - logsumexp(d);
         policy = exp(logpolicy);               % softmax policy
         lik = lik + logpolicy(a);
+        likelih(end+1) = logpolicy(1,a);
         cost = logpolicy(a) - log(p(a));       % policy complexity cost
         
         if agent.m > 2                         % if it's a cost model
@@ -139,5 +146,6 @@ for c = 1:length(C)
         end
         
     end % trials in block end
-end % block end
+end
+end
         

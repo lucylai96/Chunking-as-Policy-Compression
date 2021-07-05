@@ -7,18 +7,27 @@ clear all;
 mode = 'subject';
 folder = 'experiment/data/';
         
-subj = {'A2G43KS55YGYQE', 'A3RKG5PZN97RD5', 'AOS2PVHT2HYTL', 'A27VFM67RPD2L5',...
-        'A11CY37O9P73HW', 'A1BIJGB7XA0GME','A2EAJ7834XI2IT', 'A3FNC8ELMK8YJA',...
-        'A1P3HHEXWNLJMP', 'A1ROEDVMTO9Y3X'...
-        'A3UJSDFJ9LBQ6Z', 'A1FVXS8IM5QYO8', 'AK1Q45RF8A87Z', 'A110KENBXU7SUJ',...
-        'A27SMEOPKV84VI', 'A3N4L5F7CEY0B2', 'A8C3WNWRBWUXO', 'A27W025UEXS1G0',...
-        'A6E3QAJIQOFBQ', 'AZ8JL3QNIPY4U', 'A1V2H0UF94ATWY', 'A37QSTGGV90MFH',...
-        'A34YDGVZKRJ0LZ', 'ARLGZWN6W91WD', 'A230VUDYOCRZ4N', 'A2FL477TMKC91L',...
-        'A2NA6X1SON3KFH', 'A32JEH06T23HDF', 'A25PFSORDO3SWQ', 'A272X64FOZFYLB',...
-        'A32QWM7BWCSPTS'};
+% control is before experiment
+subj1 = {'AFM65NU0UXIGP', 'AT6OT5K5Z4V0J', 'A248QG4DPULP46', 'A26NGLGGFTATVN', ...
+        'A2GJYB46FWIB5Q', 'A16G6PPH1INQL8', 'A1M1E62KXCDNL0', 'A38IPIPA3T3G4',...
+        'A1160COTUR26JZ', 'A1FNNL4YJGBU8U', 'A1W7I6FN183I8F', 'AGTKSA15G1LBN',...
+        'AJQ71YIGY01HZ', 'A30VAYXB85107X', 'A4SC8G0149GEG', 'AQMLJYUQCSG22',...
+        'A1HKYY6XI2OHO1', 'A1DZMZTXWOM9MR', 'A23BWWRR7J5XLS', 'A2A07J1P6YEW6Z',...
+        'A2S64AUN7JI7ZS', 'A2V1T6RKD06I2X', 'A2ZDEERVRN5AMC', 'A3BUWQ5C39GRQC',...
+        'A3EG4C9T4F5DUR', 'A3KMNX2P2QP9JU', 'A3RR85PK3AV9TU', 'A8UJNIY9R8S7W',...
+        'AJQ71YIGY01HZ', 'AW0K78T4I2T72'};
+    
+% control is after experiment
+subj2 = {'A2YC6PEMIRSOAA', 'A16G6PPH1INQL8', 'A2BK45LZGGWPLX', 'A13WTEQ06V3B6D',...
+         'A28AXX4NCWPH1F', 'A2NT3OQZUUZPEO', 'A3TBG0S2IEBVHU', 'A3UUH3632AI3ZX',...
+         'A3VEF4M5FIN7KH', 'A6MWJK1YEY5L2', 'A8KX1HFH8NE2Q', 'AJQ71YIGY01HZ',...
+         'AOOLS8280CL0Z', 'AR8O1107OAW4V', 'A12HWPFXQPITHD', 'A28U7B76HLCS1U',...
+         'AJQ71YIGY01HZ'};
 
+subj = [subj1, subj2];
+         
 cutoff = 0.6;
-startOfExp = 64;  %change
+startOfExp = 4;  %change
 data.cutoff = cutoff;
 pcorr = zeros(length(subj),1);
 
@@ -29,7 +38,7 @@ for s = 1:length(subj)
     
     A = readtable(strcat(folder, subj{s}));
     A = table2cell(A);
-    A(strcmp(A(:,11), 'practice'),:) = [];
+    %A(strcmp(A(:,11), 'practice'),:) = [];
     
     corr = sum(strcmp(A(startOfExp:end, 13), 'true'));
     incorr = sum(strcmp(A(startOfExp:end,13), 'false'));
@@ -54,7 +63,6 @@ for s = 1:length(subj)
     
     A(:,13) = strrep(A(:,13), 'true', '1');
     A(:,13) = strrep(A(:,13), 'false', '0');
-    A(strcmp(A(:,11), 'practice'),:) = [];
    
     condition = unique(A(:,11));
     condition(strcmp(condition, '')) = [];
@@ -75,7 +83,7 @@ for s = 1:length(subj)
     for i=1:sum(expTrialIdx)
         data(s).rt(i) = str2double(A{idx(i),1});
     end
-    data(s).N = 150;
+    data(s).N = 750;
     
 end
 

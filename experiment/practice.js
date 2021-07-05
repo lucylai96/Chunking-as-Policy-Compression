@@ -1,20 +1,20 @@
-var practice_stimulus_Ns6 = [
-  { practice_stimulus_Ns6: 'img/animals/S1.jpg', data_Ns6:{state: 1, test_part:'practice', correct_response:49}},
-  { practice_stimulus_Ns6: 'img/animals/S2.jpg', data_Ns6:{state: 2, test_part:'practice', correct_response:50}},
-  { practice_stimulus_Ns6: 'img/animals/S3.jpg', data_Ns6:{state: 3, test_part:'practice', correct_response:51}},
-  { practice_stimulus_Ns6: 'img/animals/S4.jpg', data_Ns6:{state: 4, test_part:'practice', correct_response:52}},
-  { practice_stimulus_Ns6: 'img/animals/S5.jpg', data_Ns6:{state: 5, test_part:'practice', correct_response:53}},
-  { practice_stimulus_Ns6: 'img/animals/S6.jpg', data_Ns6:{state: 6, test_part:'practice', correct_response:54}}];
+var baseline_stimulus_Ns6 = [
+  { baseline_stimulus_Ns6: 'img/animals/control/S1.jpg', data_Ns6:{state: 1, test_part:'Ns6,baseline', correct_response:49}},
+  { baseline_stimulus_Ns6: 'img/animals/control/S2.jpg', data_Ns6:{state: 2, test_part:'Ns6,baseline', correct_response:50}},
+  { baseline_stimulus_Ns6: 'img/animals/control/S3.jpg', data_Ns6:{state: 3, test_part:'Ns6,baseline', correct_response:51}},
+  { baseline_stimulus_Ns6: 'img/animals/control/S4.jpg', data_Ns6:{state: 4, test_part:'Ns6,baseline', correct_response:52}},
+  { baseline_stimulus_Ns6: 'img/animals/control/S5.jpg', data_Ns6:{state: 5, test_part:'Ns6,baseline', correct_response:53}},
+  { baseline_stimulus_Ns6: 'img/animals/control/S6.jpg', data_Ns6:{state: 6, test_part:'Ns6,baseline', correct_response:54}}];
 
-var practice_stimulus_Ns4 = [
-  { practice_stimulus_Ns4: 'img/nature/S1.jpg', data_Ns4:{state: 1, test_part:'practice', correct_response:49}},
-  { practice_stimulus_Ns4: 'img/nature/S2.jpg', data_Ns4:{state: 2, test_part:'practice', correct_response:50}},
-  { practice_stimulus_Ns4: 'img/nature/S3.jpg', data_Ns4:{state: 3, test_part:'practice', correct_response:51}},
-  { practice_stimulus_Ns4: 'img/nature/S4.jpg', data_Ns4:{state: 4, test_part:'practice', correct_response:52}}];
+var baseline_stimulus_Ns4 = [
+  { baseline_stimulus_Ns4: 'img/nature/control/S1.jpg', data_Ns4:{state: 1, test_part:'Ns4,baseline', correct_response:49}},
+  { baseline_stimulus_Ns4: 'img/nature/control/S2.jpg', data_Ns4:{state: 2, test_part:'Ns4,baseline', correct_response:50}},
+  { baseline_stimulus_Ns4: 'img/nature/control/S3.jpg', data_Ns4:{state: 3, test_part:'Ns4,baseline', correct_response:51}},
+  { baseline_stimulus_Ns4: 'img/nature/control/S4.jpg', data_Ns4:{state: 4, test_part:'Ns4,baseline', correct_response:52}}];
 
-var practice_trial_Ns6 = {
+var baseline_trial_Ns6 = {
 	type: 'image-keyboard-response',
-	stimulus: jsPsych.timelineVariable('practice_stimulus_Ns6'),
+	stimulus: jsPsych.timelineVariable('baseline_stimulus_Ns6'),
 	stimulus_height: 360, stimulus_width: 540,
 	choices: ['1', '2', '3', '4', '5', '6'],
 	trial_duration: 3000,
@@ -25,9 +25,9 @@ var practice_trial_Ns6 = {
 	}
 };
 
-var practice_trial_Ns4 = {
+var baseline_trial_Ns4 = {
 	type: 'image-keyboard-response',
-	stimulus: jsPsych.timelineVariable('practice_stimulus_Ns4'),
+	stimulus: jsPsych.timelineVariable('baseline_stimulus_Ns4'),
 	stimulus_height: 360, stimulus_width: 540,
 	choices: ['1', '2', '3', '4'],
 	trial_duration: 3000,
@@ -45,7 +45,7 @@ var fixation = {
     trial_duration: 200 // ms
  };
 
-var practice_feedback = {
+var baseline_feedback = {
 	type: 'html-keyboard-response',
 	stimulus: function(){
 		var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
@@ -64,43 +64,42 @@ var practice_feedback = {
 	trial_duration: 300
 };
 
-var practice_finished = {
+var baseline_finished = {
   	type: 'instructions',
   	pages: [
-  	'<p class="center-content">You have completed the practice round!</p>'+ 
-  	'<p class="center-content">Take a break if you would like and then press "Begin" to start the experiment.</p>'
+  	'<p class="center-content">You have completed one experimental block!</p>'+ 
+  	'<p class="center-content">Take a break if you would like and then press "Next" to continue.</p>'
   	],
   	show_clickable_nav: true,
-  	button_label_next: 'Begin'
+  	button_label_next: 'Next'
   };
 
- var practice_block_Ns6 = {
-	timeline: [practice_trial_Ns6, practice_feedback, fixation],
-	timeline_variables: practice_stimulus_Ns6,
+ var baseline_block_Ns6 = {
+	timeline: [baseline_trial_Ns6, baseline_feedback, fixation],
+	timeline_variables: baseline_stimulus_Ns6,
 	randomize_order: true,
-	repetitions: 5
+	repetitions: 20
 };
 
 
-var practice_block_Ns4 = {
-	timeline: [practice_trial_Ns4, practice_feedback, fixation],
-	timeline_variables: practice_stimulus_Ns4,
+var baseline_block_Ns4 = {
+	timeline: [baseline_trial_Ns4, baseline_feedback, fixation],
+	timeline_variables: baseline_stimulus_Ns4,
 	randomize_order: true,
-	repetitions: 5
+	repetitions: 20
 };
 
-
-function create_practice(Ns) {
+function create_baseline(Ns) {
 	switch (Ns){
 		case 4:
-			return practice_block_Ns4; break;
+			return baseline_block_Ns4; break;
 		case 6:
-			return practice_block_Ns6; break;
+			return baseline_block_Ns6; break;
 	}
-  console.log("Creating practice block!");
+  console.log("Creating baseline block!");
 };
 
-function finish_practice() {
-  console.log("Finishing practice trials.");
-  return practice_finished;
+function finish_baseline() {
+  console.log("Finishing baseline trials.");
+  return baseline_finished;
 }

@@ -1,60 +1,65 @@
-function [results,bms_results] = fit_models(models)
+function [results,bms_results] = fit_models(models, data)
 %{
-model 4: fixed model free parameters
-    agent.beta0:         fitted value of beta
+reduced fixed model (3 free params)
+    agent.beta
+    agent.lrate_theta
+    agent.lrate_V
+
+fixed model (4 free params)
+    agent.beta:         fitted value of beta
     agent.lrate_theta:  actor learning rate
     agent.lrate_V:      critic learning rate
     agent.lrate_p:      learning rate for marginal action probability
 
-model 5: reduced adaptive model free parameters
+reduced adaptive model (5 free params)
+    agent.C:            capacity
+    agent.beta0:        initial beta value
     agent.lrate_theta:  actor learning rate
     agent.lrate_V:      critic learning rate
     agent.lrate_beta:   learning rate for beta
+ 
+adaptive model (6 free params)
+    agent.C:            capacity
     agent.beta0:        initial beta value
-    agent.C:            capacity
-
-model 6: adaptive model free parameters
-    agent.C:            capacity
     agent.lrate_theta:  actor learning rate
     agent.lrate_V:      critic learning rate
+    agent.lrate_beta:   learning rate for beta
     agent.lrate_p:      learning rate for marginal action probability
-    agent.lrate_beta:   learning rate for beta
-    agent.beta0:        initial beta value
+ 
 %}
 
-addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_Baseline/mfit');
-   
-load('actionChunk_data.mat');
+addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion/mfit');
+ 
+if nargin < 2; load('actionChunk_data.mat'); end
 idx = 1;
-
-
-for m = models
+for i = 1:length(models)
+    clear param;
+    m = models{i};
     a = 2; b = 2; %beta prior
     
-    if contains(m, 'no_cost')         % NO COST model; free params: lrate_theta, lrate_V
+    if contains(m, 'no_cost')
         param(1) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
         param(2) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
         
-    elseif contains(m, 'capacity')         %
-        param(1) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
-        param(2) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
-        param(3) = struct('name','C','lb',0.01,'ub',log(20),'logpdf',@(x) 0,'label','C');
-        
-    elseif contains(m, 'fixed')         % fixed model
+    elseif contains(m, 'fixed')
         btmin = 1e-3; btmax = 50;
-        param(1) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
-        param(2) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
-        param(3) = struct('name','invtemp','logpdf',@(x) 0,'lb',btmin,'ub',btmax,'label','\beta');
-        %param(4) = struct('name','C','lb',0.01,'ub',log(20),'logpdf',@(x) 0,'label','C');
-        param(4) = struct('name','lrate_p','lb',0,'ub',1,'logpdf',@(x) 0, 'label', 'lrate_p');
+        param(1) = struct('name','beta','logpdf',@(x) 0,'lb',btmin,'ub',btmax,'label','\beta');
+        param(2) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
+        param(3) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
+        if ~contains(m, 'reduced')
+            param(4) = struct('name','lrate_p','lb',0,'ub',1,'logpdf',@(x) 0, 'label', 'lrate_p');
+        end
         
-    elseif contains(m, 'reduced_adaptive')         % adaptive model
+    elseif contains(m, 'adaptive')
         btmin = 1e-3; btmax = 50;
-        param(1) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
-        param(2) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
-        param(3) = struct('name','lrate_beta','lb',0,'ub',1,'logpdf',@(x) 0,'label','lrate_{\beta}');
-        param(4) = struct('name','invtemp','logpdf',@(x) 0,'lb',btmin,'ub',btmax,'label','\beta');
-        param(5) = struct('name','C','lb',0.01,'ub',log(20),'logpdf',@(x) 0,'label','C');
+        param(1) = struct('name','C','lb',0.01,'ub',log(20),'logpdf',@(x) 0,'label','C');
+        param(2) = struct('name','beta0','logpdf',@(x) 0,'lb',btmin,'ub',btmax,'label','\beta');
+        param(3) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
+        param(4) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
+        param(5) = struct('name','lrate_beta','lb',0,'ub',1,'logpdf',@(x) 0,'label','lrate_{\beta}');
+        if ~contains(m, 'reduced')
+            param(6) = struct('name','lrate_p','lb',0,'ub',1,'logpdf',@(x) 0, 'label', 'lrate_p');
+        end
     end
     
     if contains(m, 'chunk')

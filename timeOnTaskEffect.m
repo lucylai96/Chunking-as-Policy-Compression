@@ -31,4 +31,8 @@ for c = 1:length(conditions)
 end
 
 %%
+prettyplot;
 plot(runningAvgRT(:,21:50)', 'LineWidth', 3);
+legend('Ns=4', 'Ns=6');
+set(gca, 'XTick',[1 16], 'XTickLabel', {'Perform', 'Test'});
+box off;

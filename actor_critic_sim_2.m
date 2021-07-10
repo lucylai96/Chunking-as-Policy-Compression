@@ -4,9 +4,9 @@ if ~isfield(agent, 'beta')
     agent.beta = agent.beta0;
 end
 
-simdata = data;
-cond = {{'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
-     {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
+%simdata = data;
+cond = {{'Ns4,baseline'}, {'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
+        {'Ns6,baseline'}, {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
 
 for setId = 1:length(cond)
     clear d_prev;
@@ -15,6 +15,7 @@ for setId = 1:length(cond)
     for c = 1:length(expCond)
         idx = [idx find(strcmp(data.cond, expCond{c}))'];
     end
+    condition = data.cond(idx);
     state = data.s(idx);
     corrchoice = data.corrchoice(idx);
     setsize = length(unique(state));    % number of distinct stimuli
@@ -97,7 +98,7 @@ for setId = 1:length(cond)
         %simdata.expreward(idx(t)) = policy(corchoice(t));
         simdata.beta(idx(t)) = beta;
         simdata.cost(idx(t)) = cost;
-        simdata.cond(idx(t)) = expCond(c);
+        simdata.cond(idx(t)) = condition(t);
         %simdata.theta(idx(t),:) = theta;
         
     end

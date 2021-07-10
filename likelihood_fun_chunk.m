@@ -146,7 +146,12 @@ for setId = 1:length(C)
             lik = lik + logpolicy(1,a);
         end
         likelihood(end+1) = logpolicy(1,a);
-        cost = logpolicy(a) - log(p(a));       % policy complexity cost
+        
+        %if a==chunk(1)
+            %cost = logpolicy(a) - log(p(a)+p(setsize+1));  % policy complexity cost
+        %else 
+        cost = logpolicy(a) - log(p(a));
+        %end    
         
         if agent.m > 1                         % if it's a cost model
             rpe = beta*r - cost - V(s);        % reward prediction error

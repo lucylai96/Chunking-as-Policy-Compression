@@ -22,7 +22,7 @@ switch c
         
     case 'pastel1'
         map = colormap(brewermap(n, 'Pastel1'));
-        
+  
     case 'set2'
         map = colormap(brewermap(n, 'Set2'));
         
@@ -34,6 +34,10 @@ switch c
         
     case 'Accent'
         map = colormap(brewermap(n, 'Accent')); 
+    
+    case 'r&b'
+        map = [colormap(brewermap(1,'Blues'));...
+               colormap(brewermap(1,'Reds'))];
 end
 
 set(0, 'DefaultAxesColorOrder', map);

@@ -15,3 +15,16 @@ xlabel('Model Label'); ylabel('AIC');
 set(gca, 'XTick',1:6, 'XTickLabel', models);
 
 
+prettyplot;
+hold on;
+X = 1:6;
+bar(X, pxp);xlabel('Model'); ylabel('PXP');
+models = {'noCost,noChunk', 'noCost,Chunk', 'Fixed,noChunk', 'Fixed,Chunk', 'Adaptive,noChunk', 'Adaptive, Chunk'};
+set(gca, 'XTick',1:6, 'XTickLabel', models);
+
+
+hold on;
+X = 1:2;
+bar(X, pxp(1:2));xlabel('Model'); ylabel('PXP');
+models = {'noCost,noChunk', 'noCost,chunk'};
+set(gca, 'XTick',1:2, 'XTickLabel', models);

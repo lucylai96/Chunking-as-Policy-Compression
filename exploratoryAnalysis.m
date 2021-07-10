@@ -1,5 +1,5 @@
 function exploratoryAnalysis()
-
+prettyplot;
 load('actionChunk_data.mat');
 nSubj = length(data);
 %condition = unique(data(1).cond);
@@ -19,7 +19,7 @@ for s = 1:nSubj
 end
 
 bmap = plmColors(length(condition)/2, 'pastel1');
-hold on;
+figure; hold on;
 X = 1:2;
 tmp = mean(acc,1); plotAcc(1,:) = tmp(1:length(condition)/2); plotAcc(2,:) = tmp(length(condition)/2+1:length(condition));
 b = bar(X, plotAcc);
@@ -27,7 +27,8 @@ sem = nanstd(acc, 1)/sqrt(nSubj) ; sem = reshape(sem, [2 length(condition)/2]);
 errorbar_pos = errorbarPosition(b, sem);
 errorbar(errorbar_pos', plotAcc, min(sem,1-plotAcc), sem, 'k','linestyle','none', 'lineWidth', 1.2);
 ylim([0 1]);
-legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'northeast');
+legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'north');
+legend('boxoff');
 set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
 xlabel('Set size'); ylabel('Average accuracy');
 
@@ -49,7 +50,7 @@ b = bar([1 2], plotRT);
 sem = nanstd(rt, 1)/sqrt(nSubj); sem = reshape(sem, [2 length(condition)/2]);
 errorbar_pos = errorbarPosition(b, sem);
 errorbar(errorbar_pos', plotRT, sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'northwest');
+legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'north');
 set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
 xlabel('Set size'); ylabel('Average Response Time');
 
@@ -102,16 +103,23 @@ bmap = plmColors(4, 'pastel1');
 figure; hold on;
 tmp = nanmean(rtChunkCorr,1); plotRTChunk(1,:) = tmp(1:length(condition)/2); plotRTChunk(2,:) = tmp(length(condition)/2+1:length(condition));
 sem = nanstd(rtChunkCorr, 1) / sqrt(nSubj); sem = reshape(sem, [2 4]);
-b = bar([1 2], plotRTChunk);
-errorbar_pos = errorbarPosition(b, sem);
-errorbar(errorbar_pos', plotRTChunk, sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-legend('Baseline', 'Train', 'Test', 'Location', 'northwest');
+b = bar([1 2], plotRTChunk(:,1:2));
+errorbar_pos = errorbarPosition(b, sem(:,1:2));
+errorbar(errorbar_pos', plotRTChunk(:,1:2), sem(:,1:2), sem(:,1:2), 'k','linestyle','none', 'lineWidth', 1.2);
+legend('Baseline', 'Train', 'Location', 'northwest');  
 set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
 xlabel('Set size'); ylabel('Intrachunk Response Time');
 
+bmap = plmColors(4, 'pastel1');
+figure; hold on;
+b = bar([1 2], plotRTChunk(:,3:4));
+errorbar_pos = errorbarPosition(b, sem(:,3:4));
+errorbar(errorbar_pos', plotRTChunk(:,3:4), sem(:,3:4), sem(:,3:4), 'k','linestyle','none', 'lineWidth', 1.2);
+legend('Perform', 'Test', 'Location', 'northwest');  
+set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
+xlabel('Set size'); ylabel('Intrachunk Response Time');
 %% Reward-complexity curve
 %%
-
 reward = nan(nSubj, length(condition));
 complexity = nan(nSubj, length(condition));
 for s = 1:nSubj
@@ -130,16 +138,17 @@ scatter(complexity(:,entry), reward(:,entry), 120, 'filled', 'MarkerFaceColor', 
 polycoef = polyfit(complexity(:,entry), reward(:,entry), 2);
 X = linspace(min(complexity(:,entry))-0.1, max(complexity(:,entry))+0.1, 50);
 Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-p1 = plot(X, Y, 'MarkerFaceColor', '#0072BD', 'LineWidth', 4);
+p1 = plot(X, Y, 'Color', '#0072BD', 'LineWidth', 4);
 
 entry = 5;
 scatter(complexity(:,entry), reward(:,entry), 120, 'filled', 'MarkerFaceColor', '#D95319');
 polycoef = polyfit(complexity(:,entry), reward(:,entry), 2);
 X = linspace(min(complexity(:,entry))-0.1, max(complexity(:,entry))+0.1, 80);
 Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-p2 = plot(X, Y, 'MarkerFaceColor', '#D95319', 'LineWidth', 4);
+p2 = plot(X, Y, 'Color', '#D95319', 'LineWidth', 4);
 
 legend([p1 p2], {'Ns=4 Baseline','Ns=6 Baseline'}, 'Location', 'northwest');
+legend('boxoff');
 %xlim([1 1.62]); ylim([0.6, 1.0]);
 xlabel('Policy complexity'); ylabel('Average reward');
 
@@ -177,21 +186,25 @@ end
 
 
 hold on;
-entry = 1;
+entry = 5;
 scatter(complexity(:,entry), time(:,entry), 120, 'filled', 'MarkerFaceColor', '#0072BD');
 polycoef = polyfit(complexity(:,entry), time(:,entry), 2);
 X = linspace(0, 1.55, 100);
 Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-p1 = plot(X, Y, 'MarkerFaceColor', '#0072BD', 'LineWidth', 4);
+p1 = plot(X, Y, 'Color', '#0072BD', 'LineWidth', 4);
 
-entry = 5;
+entry = 6;
 scatter(complexity(:,entry), time(:,entry), 120, 'filled', 'MarkerFaceColor', '#D95319');
 polycoef = polyfit(complexity(:,entry), time(:,entry), 2);
 X = linspace(0, 1.55, 100);
 Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-p2 = plot(X, Y, 'MarkerFaceColor', '#D95319', 'LineWidth', 4);
+p2 = plot(X, Y, 'Color', '#D95319', 'LineWidth', 4);
 
 legend([p1 p2], {'Ns=4 Baseline','Ns=6 Baseline'}, 'Location', 'northeast');
+legend('boxoff');
 %xlim([0 1.62]); ylim([0.6, 1.0]);
-xlabel('Policy complexity'); ylabel('Average reward');
+xlabel('Policy complexity'); ylabel('Average RT');
+
+%%
+
 end

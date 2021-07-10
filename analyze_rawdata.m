@@ -60,6 +60,7 @@ for s = 1:length(subj)
     corr = sum(strcmp(A(startOfExp:end, 13), 'true'));
     incorr = sum(strcmp(A(startOfExp:end,13), 'false'));
     data(s).performance = corr/(corr+incorr);
+    data(s).bonus = data(s).performance * 10;
     
     A(:,13) = strrep(A(:,13), 'true', '1');
     A(:,13) = strrep(A(:,13), 'false', '0');
@@ -83,7 +84,7 @@ for s = 1:length(subj)
     for i=1:sum(expTrialIdx)
         data(s).rt(i) = str2double(A{idx(i),1});
     end
-    data(s).N = 750;
+    data(s).N = 700;
     
 end
 

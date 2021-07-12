@@ -1,8 +1,7 @@
 function simdata = sim_from_empirical(modelIdx, data, results)
 
 prettyplot
-if nargin < 2; load actionChunk_data.mat; end
-if nargin < 3; load model_fits0.mat; end
+if nargin < 3; load actionChunk_data.mat; end
 
 results = results(modelIdx);
 for s = 1:length(data)
@@ -35,9 +34,9 @@ for s = 1:length(data)
         agent.(results.param(k).name) = results.x(s,k);
     end
     
-    simdata(s) = actor_critic_sim_refined(agent, data(s));
+    %simdata(s) = actor_critic_sim_refined(agent, data(s));
+    simdata(s) = actor_critic_sim_1(agent, data(s));
 end
 
-%simresults = analyze_sim(simdata);
 end
         

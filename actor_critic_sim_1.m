@@ -110,11 +110,11 @@ for setId = 1:length(cond)
         simdata.a(idx(t)) = a;
         simdata.r(idx(t)) = acc;
         simdata.acc(idx(t)) = acc;
-        %simdata.expreward(idx(t)) = policy(corchoice(t));
         simdata.beta(idx(t)) = beta;
         simdata.cost(idx(t)) = cost;
         simdata.cond(idx(t)) = condition(t);
-        %simdata.theta(idx(t),:) = theta;
+        simdata.d(idx(t)) = {d};
+        simdata.theta(idx(t)) = {theta};
         
     end
     simdata.p(setId) = {p};

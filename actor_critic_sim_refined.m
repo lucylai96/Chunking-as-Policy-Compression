@@ -18,13 +18,13 @@ for setId = 1:length(cond)
     condition = data.cond(idx);
     state = data.s(idx);
     corrchoice = data.corrchoice(idx);
-    setsize = length(unique(state));    % number of distinct stimuli
-    nA = setsize + 1;                   % number of distinct actions
-    theta = zeros(setsize, nA);         % policy parameters
+    setsize = length(unique(state));         % number of distinct stimuli
+    nA = setsize + 1;                        % number of distinct actions
+    theta = zeros(setsize, nA);              % policy parameters
     V = zeros(setsize,1)+0.01;               % state values
-    Q = zeros(setsize,nA);              % state-action values
+    Q = zeros(setsize,nA);                   % state-action values
     beta = agent.beta;
-    p = zeros(1,nA);                    % marginal action probabilities
+    p = zeros(1,nA);                         % marginal action probabilities
     p(1:nA-1) = 1/(nA-1)-0.01; p(nA) = 0.01*(nA-1);                
     ecost = 0;
     
@@ -100,11 +100,13 @@ for setId = 1:length(cond)
         simdata.a(idx(t)) = a;
         simdata.r(idx(t)) = acc;
         simdata.acc(idx(t)) = acc;
-        %simdata.expreward(idx(t)) = policy(corchoice(t));
         simdata.beta(idx(t)) = beta;
         simdata.cost(idx(t)) = cost;
         simdata.cond(idx(t)) = condition(t);
-        %simdata.theta(idx(t),:) = theta;
+        simdata.V(idx(t)) = {V};
+        simdata.theta(idx(t)) = {theta};
+        simdata.Q(idx(t)) = {Q};
+        simdata.d(idx(t)) = {d};
         
     end
     simdata.p(setId) = {p};

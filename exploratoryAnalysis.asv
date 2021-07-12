@@ -221,12 +221,11 @@ switch plotCase
                 if ~isnan(rt(state(pos)~=action(pos))); reactionTime(s,c) = nanmean(rt(state(pos)~=action(pos)));end
             end
         end
-        [h, p] = ttest2(slips(:,1)+error(:,1),slips(:,2)+error(:,2) , 'Tail', 'left');
-        total_error = slips + error;
-        hold on; bar([1 2], mean(total_error), 'stacked');
-        errorbar(mean(total_error), std(total_error,1)/sqrt(nSubj), 'k','linestyle','none', 'lineWidth', 1.2);
-        set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4,test', 'Ns=6,test'});
-        ylabel('Average # of incorrect responses');
+        [h, p] = ttest2(error(:,1),error(:,2) , 'Tail', 'left');
+        total_error = mean(slips) + mean(error);
+        hold on; bar([1 2], total_error, 'stacked');
+        errorbar([1 2], std(slips+e/sqrt(nSubj), 'k','linestyle','none', 'lineWidth', 1.2);
+        
             
             
 

@@ -1,5 +1,6 @@
 function chunkRelatedAnalysis()
 %% Determine if reduction in intrachunk RT is higher for Ns=6
+
 load('actionChunk_data.mat');
 nSubj = length(data);
 condition = {'Ns4,baseline', 'Ns4,train','Ns6,baseline', 'Ns6,train'};
@@ -39,6 +40,7 @@ idx = diffRT(:,1)<0 & diffRT(:,2)<0;
 
 
 %% Determine if reduction in average RT is higher for Ns=6
+
 avgRT = nan(nSubj, length(condition));
 condition = {'Ns4,baseline', 'Ns4,train', 'Ns6,baseline', 'Ns6,train'};
 for s = 1:nSubj
@@ -48,9 +50,11 @@ for s = 1:nSubj
     end
 end
 
-[h, p] = ttest2(diffRT(idx,1), diffRT(idx,2), 'Tail', 'right')
+idx = avgRT(:,2)<avgRT(:,1) & avgRT(:,4)<avgRT(:,3);
+[h, p] = ttest2(avgRT(idx,3)-avgRT(idx,4), avgRT(idx,1)-avgRT(idx,2), 'Tail', 'right')
 
 %% Determine if prechunk RT is longer than its preceeding and succeeding RTs
+
 % identify prechunk RTs
 precessor = nan(2, nSubj, 2);
 successor = nan(2, nSubj, 2);
@@ -72,15 +76,35 @@ for subj = 1:nSubj
     end
 end
 
+%% Determine if chunking reduces policy complexity
+
+conds = {'Ns4,perform', 'Ns4,test', 'Ns6,perform', 'Ns6,test'};
+complexity = nan(nSubj, length(conds));
+for s = 1:nSubj
+    for c = 1:length(conds)
+        idx = strcmp(data(s).cond, condition(c));
+        state = data(s).s(idx);
+        action = data(s).a(idx); 
+        
+    end
+end
+
+[h4, p4] = ttest2(complexity(:,1), complexity(:,2), 'Tail', 'left')
+[h6, p6] = ttest2(complexity(:,3), complexity(:,4), 'Tail', 'left')
+
+[p,h] = signrank(complexity(:,3), complexity(:,4), 'Tail', 'left');
+
+
 
 %% Determine if resource-constrained agents chunk more
-%%
+
+load('fixed_adaptive_chunk');
+C = results(2).x(1);
 model = fitlm(C, reduction);
 model.Coefficients
 
 
-%% How response time changes though time
-%%
+%% How response time changes though time for both intrachunk state & exochunk states
 
 nPresent = sum(data(1).s(strcmp(data(1).cond, 'Ns4,train'))==1);
 stateConds = {'Ns4,baseline', 'Ns4,train'};
@@ -105,8 +129,7 @@ end
 % intrachunk RT VS exochunk RT within train block
 intraRT_timeDynamics = squeeze(nanmean(intraRT, 2));
 exoRT_timeDynamics = squeeze(nanmean(exoRT, 2));
-            
-        
+                    
 figure; hold on;
 plot(intraRT_timeDynamics(1,:), 'LineWidth', 3);
 plot(intraRT_timeDynamics(2,:), 'LineWidth', 3); 

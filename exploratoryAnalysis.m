@@ -150,26 +150,7 @@ switch plotCase
         legend('boxoff');
         %xlim([1 1.62]); ylim([0.6, 1.0]);
         xlabel('Policy complexity'); ylabel('Average reward');
-
-        %{
-                figure; hold on;
-                scatter(complexity(:,4), reward(:,4), 120, 'filled', 'MarkerFaceColor', '#0072BD');
-                polycoef = polyfit(complexity(:,4), reward(:,4), 2);
-                X = linspace(min(complexity(:,4)), max(complexity(:,4)), 50);
-                Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-                p1 = plot(X, Y, 'MarkerFaceColor', '#0072BD', 'LineWidth', 4);
-
-                scatter(complexity(:,5), reward(:,5), 120, 'filled', 'MarkerFaceColor', '#A2142F');
-                polycoef = polyfit(complexity(:,5), reward(:,5), 2);
-                X = linspace(min(complexity(:,5)), max(complexity(:,5)), 50);
-                Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-                p2 = plot(X, Y, 'MarkerFaceColor', '#A2142F', 'LineWidth', 4);
-
-                legend([p1 p2], {'Ns=6 Baseline','Ns=6 Train'}, 'Location', 'southeast');
-                xlim([1.2 1.61]);
-                xlabel('Policy complexity'); ylabel('Average reward');
-        %}
-
+        
  
     case 'RT-complexity'
         time = nan(nSubj, length(condition));
@@ -227,8 +208,6 @@ switch plotCase
         errorbar(mean(total_error), std(total_error,1)/sqrt(nSubj), 'k','linestyle','none', 'lineWidth', 1.2);
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4,test', 'Ns=6,test'});
         ylabel('Average # of incorrect responses');
-            
-            
-
-
+end        
+           
 end

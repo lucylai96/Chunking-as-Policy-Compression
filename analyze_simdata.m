@@ -50,6 +50,22 @@ for subj = 1:nSubj
         policy6(iter,2,subj)= poli(7);
     end
 end
+
+%% running average of policy complexity
+complx = nan(nSubj, length(simdata(1).theta));
+if modelIdx==1; beta = results(1).x(:,1); end
+for s = 1:nSubj
+    for trial = 1:length(simdata(s).theta)
+        p = simdata(s).p{trial};
+        theta = simdata(s).theta{trial};
+        policy = nan(size(theta));
+        for i = 1:size(theta,1)
+            d = beta(s) * theta(i,:) + log(p);
+            policy(i,:) = exp(d - logsumexp(d));   %calculate policy
+        end
+            
+            
         
+
 
 

@@ -54,7 +54,13 @@ switch plotCase
         legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'north');
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
         xlabel('Set size'); ylabel('Average Response Time');
-
+    
+    case 'policy complexity'
+        complexity = recoded_policy_complexity(data);
+        avgComplx = mean(complexity, 1);
+        sem = std(complexity, 1)/sqrt(nSubj);
+        bar(avgComplx);
+        errorbar(avgComplx, sem);
 
     case 'actionSlips'
         actionSlip = zeros(nSubj, 2);
@@ -150,40 +156,42 @@ switch plotCase
         legend('boxoff');
         %xlim([1 1.62]); ylim([0.6, 1.0]);
         xlabel('Policy complexity'); ylabel('Average reward');
-
-        %{
-                figure; hold on;
-                scatter(complexity(:,4), reward(:,4), 120, 'filled', 'MarkerFaceColor', '#0072BD');
-                polycoef = polyfit(complexity(:,4), reward(:,4), 2);
-                X = linspace(min(complexity(:,4)), max(complexity(:,4)), 50);
-                Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-                p1 = plot(X, Y, 'MarkerFaceColor', '#0072BD', 'LineWidth', 4);
-
-                scatter(complexity(:,5), reward(:,5), 120, 'filled', 'MarkerFaceColor', '#A2142F');
-                polycoef = polyfit(complexity(:,5), reward(:,5), 2);
-                X = linspace(min(complexity(:,5)), max(complexity(:,5)), 50);
-                Y = polycoef(1).*X.*X + polycoef(2).*X + polycoef(3);
-                p2 = plot(X, Y, 'MarkerFaceColor', '#A2142F', 'LineWidth', 4);
-
-                legend([p1 p2], {'Ns=6 Baseline','Ns=6 Train'}, 'Location', 'southeast');
-                xlim([1.2 1.61]);
-                xlabel('Policy complexity'); ylabel('Average reward');
-        %}
-
+        
  
     case 'RT-complexity'
         time = nan(nSubj, length(condition));
+        rtChunkCorr = zeros(nSubj, length(condition));
         complexity = nan(nSubj, length(condition));
+        chunkInit = [2,5];
         for s = 1:nSubj
             for c = 1:length(condition)
                 idx = strcmp(data(s).cond, condition(c));
                 state = data(s).s(idx);
                 action = data(s).a(idx);
-                time(s,c) = nanmean(data(s).rt(idx));
+                rt = data(s).rt(idx);
+                time(s,c) = nanmean(rt);
                 complexity(s,c) = information(state', action');
+                if contains(condition(c),'4'); condIdx = 1; end
+                if contains(condition(c),'6'); condIdx = 2;end
+                pos = find(state==chunkInit(condIdx))+1; pos(pos>length(state))=[];
+                rtChunkCorr(s,c) = nanmean(rt(intersect(find(state == action), pos)));
             end
         end
-
+        
+        % average & intrachunk for Perform & Test
+        avgRT_perf_test = horzcat([time(:,3); time(:,4)], [time(:,7); time(:,8)]);
+        intraRT_perf_test = horzcat([rtChunkCorr(:,3); rtChunkCorr(:,4)], [rtChunkCorr(:,7); rtChunkCorr(:,8)]);
+        % policy complexity for Perform & Test
+        complx_perf_test = horzcat([complexity(:,3); complexity(:,4)], [complexity(:,7); complexity(:,8)]);
+        
+        % test for correlation between RT & Complexity in Perform & Test
+        [r,p] = corr(avgRT_perf_test(:,1), complx_perf_test(:,1), 'Type', 'Pearson');
+        [r,p] = corr(avgRT_perf_test(:,2), complx_perf_test(:,2), 'Type', 'Pearson');
+        [r,p] = corr(intraRT_perf_test(:,1), complx_perf_test(:,1), 'Type', 'Pearson');
+        [r,p] = corr(intraRT_perf_test(:,2), complx_perf_test(:,2), 'Type', 'Pearson');
+        model = fitlm(avgRT_perf_test(:,1), complx_perf_test(:,1));
+        model.Coefficients
+        
         hold on;
         entry = 5;
         scatter(complexity(:,entry), time(:,entry), 120, 'filled', 'MarkerFaceColor', '#0072BD');
@@ -221,13 +229,12 @@ switch plotCase
                 if ~isnan(rt(state(pos)~=action(pos))); reactionTime(s,c) = nanmean(rt(state(pos)~=action(pos)));end
             end
         end
-        [h, p] = ttest2(error(:,1),error(:,2) , 'Tail', 'left');
-        total_error = mean(slips) + mean(error);
-        hold on; bar([1 2], total_error, 'stacked');
-        errorbar([1 2], std(slips+e/sqrt(nSubj), 'k','linestyle','none', 'lineWidth', 1.2);
-        
-            
-            
-
-
+        [h, p] = ttest2(slips(:,1)+error(:,1),slips(:,2)+error(:,2) , 'Tail', 'left');
+        total_error = slips + error;
+        hold on; bar([1 2], mean(total_error), 'stacked');
+        errorbar(mean(total_error), std(total_error,1)/sqrt(nSubj), 'k','linestyle','none', 'lineWidth', 1.2);
+        set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4,test', 'Ns=6,test'});
+        ylabel('Average # of incorrect responses');
+end        
+           
 end

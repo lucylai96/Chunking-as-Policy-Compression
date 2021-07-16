@@ -80,7 +80,8 @@ end
 
 %% Determine if chunking reduces policy complexity
 
-conds = {'Ns4,perform', 'Ns4,test', 'Ns6,perform', 'Ns6,test'};
+conds = {'Ns4,perfrom', 'Ns4,test', 'Ns6,perform', 'Ns6,test'};
+%conds = {'Ns4,baseline', 'Ns4,train', 'Ns6,baseline', 'Ns6,train'};
 complexity = nan(nSubj, length(conds));
 for s = 1:nSubj
     for c = 1:length(conds)
@@ -137,4 +138,4 @@ figure; hold on;
 plot(intraRT_timeDynamics(1,:), 'LineWidth', 3);
 plot(intraRT_timeDynamics(2,:), 'LineWidth', 3); 
 legend('Ns6,baseline', 'Ns6,train');
-      
+

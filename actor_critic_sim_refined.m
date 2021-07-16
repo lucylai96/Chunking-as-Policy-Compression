@@ -63,6 +63,7 @@ for setId = 1:length(cond)
         
         if a==chunk(1)
             cost = logpolicy(a) - log(p(a)+p(setsize+1));  % policy complexity cost
+            %cost = logpolicy(a) - log(p(a));
         else 
             cost = logpolicy(a) - log(p(a));
         end    
@@ -107,9 +108,9 @@ for setId = 1:length(cond)
         simdata.theta(idx(t)) = {theta};
         simdata.Q(idx(t)) = {Q};
         simdata.d(idx(t)) = {d};
+        simdata.p(idx(t)) = {p};
         
     end
-    simdata.p(setId) = {p};
 end
 end
         

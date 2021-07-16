@@ -34,8 +34,8 @@ for s = 1:length(data)
         agent.(results.param(k).name) = results.x(s,k);
     end
     
-    %simdata(s) = actor_critic_sim_refined(agent, data(s));
-    simdata(s) = actor_critic_sim_1(agent, data(s));
+    simdata(s) = actor_critic_sim_refined(agent, data(s));
+    %simdata(s) = actor_critic_sim_1(agent, data(s));
 end
 
 end

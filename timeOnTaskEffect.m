@@ -5,11 +5,11 @@ conditions = {{'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
               {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
 nSubj = length(data);
 iter = nan(1,length(conditions{1}));
-cumIter = [0 cumsum(iter)];
 for c = 1:length(conditions{1})
     cond = conditions{1};
     iter(c) = sum(data(1).s(strcmp(data(1).cond, cond{c}))==1);
 end
+cumIter = [0 cumsum(iter)];
 runningAvgRT = nan(length(conditions), sum(iter));
 runningSemRT = nan(length(conditions), sum(iter));
 setsizes = [4 6];
@@ -32,7 +32,29 @@ end
 
 %%
 prettyplot;
-plot(runningAvgRT(:,21:50)', 'LineWidth', 3);
-legend('Ns=4', 'Ns=6');
-set(gca, 'XTick',[1 16], 'XTickLabel', {'Perform', 'Test'});
+runningAvgRT = movmean(runningAvgRT,5,2);
+
+figure;
+plot(runningAvgRT', 'LineWidth', 3);
+legend('Ns=4', 'Ns=6'); legend('boxoff');
+xlabel('Task Progression'); ylabel('Average RT');
+set(gca, 'XTick',cumIter+1, 'XTickLabel', {'Train','Perform', 'Test'});
+box off;
+
+figure;
+plot(runningAvgRT(:,1:20)', 'LineWidth', 3);
+legend('Ns=4', 'Ns=6'); legend('boxoff');
+xlabel('Iterations/stimulus in Train');ylabel('Average RT'); box off;
+box off;
+
+figure;
+plot(runningAvgRT(:,21:35)', 'LineWidth', 3);
+legend('Ns=4', 'Ns=6'); legend('boxoff');
+xlabel('Iterations/stimulus in Perform');ylabel('Average RT'); box off;
+box off;
+
+figure;
+plot(runningAvgRT(:,36:50)', 'LineWidth', 3);
+legend('Ns=4', 'Ns=6'); legend('boxoff');
+xlabel('Iterations/stimulus in Test');ylabel('Average RT'); box off;
 box off;

@@ -50,27 +50,25 @@ for setId = 1:length(cond)
     a_actual = 0;
     policy_prev = 0;
     
-   for t = 1:length(state)
+    for t = 1:length(state)
         s = state(t);
-        
+        d = beta * theta(s,:) + log(p);
+        logpolicy = d-logsumexp(d);
+        policy = exp(logpolicy);    % softmax policy
         if inChunk == 0
-            d = beta * theta(s,:) + log(p);
-            logpolicy = d-logsumexp(d);
-            policy = exp(logpolicy);
-            a = fastrandsample(policy); 
-            
-            r = reward(s,a);
+            a = fastrandsample(policy); % action
             if a==nA; inChunk=1; chunkStep=1; end
         else
-            a = nA;
             chunkStep = chunkStep+1;
-            r = reward(s, chunk(chunkStep));
+            a = nA;
         end
         
+        if inChunk == 0; a_actual = a; end
+        if inChunk == 1; a_actual = chunk(chunkStep); end
+        
+        r = reward(s, a_actual);
         cost = logpolicy(a) - log(p(a));
         if inChunk==1 && chunkStep>1; cost=0; end
-        if inChunk==1; acc = s==chunk(chunkStep); a_ground = chunk(chunkStep); end
-        if inChunk==0; acc = s==a; a_ground = a; end
         
         if agent.m > 1                       
             rpe = beta*r - cost - V(s);       
@@ -83,26 +81,47 @@ for setId = 1:length(cond)
             beta = beta + agent.lrate_beta*2*(agent.C-ecost); 
             beta = max(min(beta,50),0);
         end
-                    
-        g = agent.beta*(1 - policy(a));                        % policy gradient
-        theta(s,a) = theta(s,a) + (agent.lrate_theta)*rpe*g;   % policy parameter update
-        V(s) = V(s) + agent.lrate_V*rpe;
+
+        if ~inChunk
+            g = rpe*beta*(1 - policy(a));   
+            theta(s,a) = theta(s,a) + agent.lrate_theta*g;             
+            Q(s,a) = Q(s,a) + agent.lrate_V*(beta*r-cost-Q(s,a));
+            V(s) = V(s) + agent.lrate_V*rpe;  
+            p = p + agent.lrate_p*(policy - p); p = p./sum(p);
+            if a==chunk(1)
+                theta(s,nA) = theta(s,nA) + agent.lrate_theta*g;
+                Q(s,nA) = Q(s,nA) + agent.lrate_V*(beta*r-cost-Q(s,a));
+            end
+        else
+            if chunkStep==2
+                s_prev = simdata.s(idx(t-1));
+                r_chunk = (simdata.r(idx(t-1))==1 && r==1); if r_chunk==0; r_chunk=-1; end
+                rpe_chunk = beta*r_chunk - simdata.cost(idx(t-1)) - V(s_prev);
+                g_chunk = rpe_chunk*beta*(1-policy_prev(nA));
+                theta(s_prev,nA) = theta(s_prev,nA) +agent.lrate_theta*(g_chunk);  
+                Q(s_prev,nA) = Q(s_prev,nA) + agent.lrate_V*(beta*r_chunk-simdata.cost(idx(t-1))-Q(s_prev,a));
+                V(s_prev) = V(s_prev) + agent.lrate_V*rpe_chunk;  
+                p = p + agent.lrate_p*(policy - p); p = p./sum(p);
+            end
+        end
         
         simdata.s(idx(t)) = s;
+        simdata.a(idx(t)) = a_actual;
         simdata.r(idx(t)) = r;
-        simdata.a(idx(t)) = a_ground;
+        simdata.acc(idx(t)) = s==a_actual;
         simdata.beta(idx(t)) = beta;
         simdata.ecost(idx(t)) = ecost;
         simdata.cost(idx(t)) = cost;
-        simdata.acc(idx(t)) = acc;
         simdata.cond(idx(t)) = condition(t);
         simdata.theta{idx(t)} = theta;
         simdata.inChunk(idx(t)) = inChunk;
         simdata.chunkStep(idx(t)) = chunkStep;
         simdata.policy{idx(t)} = policy;
-    
         if chunkStep==length(chunk); inChunk=0; chunkStep=0; end
+        policy_prev = policy;
+        
     end
+    simdata.p(setId) = {p};
 end
 end
         

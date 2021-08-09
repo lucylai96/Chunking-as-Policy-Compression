@@ -8,69 +8,25 @@ bmap = [141 182 205
         255 140 105
         238 201 0  
         155 205 155] / 255;         
-%%
-%simdata = sim_from_empirical(1, data, results);
+    
+%% Simulate data
+incentive_manip = 0; 
 
-incentives.Ns4 = [eye(4), transpose([0 1 0 0])];
-%incentives.Ns4(1,:) = incentives.Ns4(1,:)*5;
-incentives.Ns6 = [eye(6), transpose([0 0 0 0 1 0])];
-%incentives.Ns6(4,:) = incentives.Ns6(4,:)*5;
-simdata = sim_incentive_manipulation(incentives);
+if incentive_manip  % simulate data under incentive manipulation for Ns=4
+    manipulation = [eye(4), transpose([0 1 0 0])];
+    manipulation(1,1) = 5;
+    incentives{3} = manipulation;
+    simdata = sim_incentive_manipulation(incentives, 4);
+else                % simulate data under regular reward scheme
+    simdata = sim_from_empirical();    
+end
 
-% Exploratory Analysis
+
+%% Exploratory Analysis
 learningCurve(simdata);
 exploratoryAnalysis('avgAcc', simdata);
            
-%% Cumulative cost 
-bmap = plmColors(length(condition)/2, 'pastel1');
-cumcost = cell(length(simdata), length(condition));
-avgcumcost = cell(1, length(condition));
-for cond = 1:length(condition)
-    for subj = 1:length(simdata)
-        cumcost{subj, cond} = cumsum(simdata(subj).cost(strcmp(simdata(subj).cond, condition{cond})));
-        if isempty(avgcumcost{cond}); avgcumcost{cond} = zeros(1, length(cumcost{subj,cond})); end
-        avgcumcost{cond} = avgcumcost{cond} + cumcost{subj, cond};
-    end
-    avgcumcost{cond} = avgcumcost{cond} / length(simdata);
-end
 
-for i = 1:2
-    figure; hold on;
-    plot(avgcumcost{4*(i-1)+1}, 'linewidth', 4);
-    plot(avgcumcost{4*(i-1)+2}, 'linewidth', 4);
-    plot(avgcumcost{4*(i-1)+4}, 'linewidth', 4);
-    plot(avgcumcost{4*(i-1)+3}, 'linewidth', 4);
-    xlabel('Iterations'); ylabel('Cumulative cost');
-    legend('Random Train', 'Structured Train', 'Random Test', 'Structured Test', 'location','northwest');
-    legend('boxoff');
-    if i==1; title('Ns=4'); end
-    if i==2; title('Ns=6'); end
-end
-
-%% Running average of cost
-ecost = cell(length(simdata), length(condition));
-avgecost = cell(1, length(condition));
-for cond = 1:length(condition)
-    for subj = 1:length(simdata)
-        ecost{subj, cond} = simdata(subj).ecost(strcmp(simdata(subj).cond, condition{cond}));
-        if isempty(avgcumcost{cond}); avgcumcost{cond} = zeros(1, length(cumcost{subj,cond})); end
-        avgecost{cond} = avgcumcost{cond} + ecost{subj, cond};
-    end
-    avgecost{cond} = avgecost{cond} / length(simdata);
-end
-
-for i = 1:2
-    figure; hold on;
-    plot(avgecost{4*(i-1)+1}, 'linewidth', 4);
-    plot(avgecost{4*(i-1)+2}, 'linewidth', 4);
-    plot(avgecost{4*(i-1)+4}, 'linewidth', 4);
-    plot(avgecost{4*(i-1)+3}, 'linewidth', 4);
-    xlabel('Iterations'); ylabel('Running average of cost');
-    legend('Random Train', 'Structured Train', 'Random Test', 'Structured Test', 'location','northwest');
-    legend('boxoff');
-    if i==1; title('Ns=4'); end
-    if i==2; title('Ns=6'); end
-end
 %% The probability of using chunks VS primitive action
 nSubj = length(simdata);
 times = zeros(nSubj, length(condition));
@@ -122,3 +78,31 @@ for subj = 1:nSubj
         pAS(subj,cond) = sum(simdata(subj).inChunk(idx)==0 & simdata(subj).a(idx)==init & state==init) / sum(state==init);
     end
 end
+
+
+%% Cumulative cost (WRONG WAY OF CALCULATING THE ECOST)
+bmap = plmColors(length(condition)/2, 'pastel1');
+cumcost = cell(length(simdata), length(condition));
+avgcumcost = cell(1, length(condition));
+for cond = 1:length(condition)
+    for subj = 1:length(simdata)
+        cumcost{subj, cond} = cumsum(simdata(subj).cost(strcmp(simdata(subj).cond, condition{cond})));
+        if isempty(avgcumcost{cond}); avgcumcost{cond} = zeros(1, length(cumcost{subj,cond})); end
+        avgcumcost{cond} = avgcumcost{cond} + cumcost{subj, cond};
+    end
+    avgcumcost{cond} = avgcumcost{cond} / length(simdata);
+end
+
+for i = 1:2
+    figure; hold on;
+    plot(avgcumcost{4*(i-1)+1}, 'linewidth', 4);
+    plot(avgcumcost{4*(i-1)+2}, 'linewidth', 4);
+    plot(avgcumcost{4*(i-1)+4}, 'linewidth', 4);
+    plot(avgcumcost{4*(i-1)+3}, 'linewidth', 4);
+    xlabel('Iterations'); ylabel('Cumulative cost');
+    legend('Random Train', 'Structured Train', 'Random Test', 'Structured Test', 'location','northwest');
+    legend('boxoff');
+    if i==1; title('Ns=4'); end
+    if i==2; title('Ns=6'); end
+end
+

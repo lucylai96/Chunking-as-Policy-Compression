@@ -3,6 +3,7 @@ addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion/matlab
 prettyplot
 if nargin < 3; load model_fitting_all.mat; end
 if nargin < 2; load actionChunk_data.mat; end
+if nargin == 0; modelIdx = 4; end
 
 results = results(modelIdx);
 for s = 1:length(data)

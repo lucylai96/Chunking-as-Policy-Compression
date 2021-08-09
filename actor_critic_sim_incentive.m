@@ -1,5 +1,11 @@
 function simdata = actor_critic_sim_incentive(agent, data, setsize, incentives)
 
+if nargin < 4 || isempty(incentives)
+    for i = 1:4
+    incentives{i} = [eye(4), transpose([0 1 0 0])];
+    end
+end
+
 if ~isfield(agent, 'beta')
     agent.beta = agent.beta0;
 end

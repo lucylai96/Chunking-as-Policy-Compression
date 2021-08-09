@@ -1,19 +1,16 @@
-function simdata = sim_incentive_manipulation()
+function simdata = sim_incentive_manipulation(incentives, setsize)
 addpath([pwd '/matlab_data/']);
 load('actionChunk_data.mat');
 load('fixed_adaptive_chunk.mat');
 modelIdx = 1;
 nSubj = length(data);
-setsize = 4;
-conditions = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test'};
 
-%%  Set incentive structure
-for i = 1:4
-    incentives{i} = [eye(4), transpose([0 1 0 0])];
+switch setsize
+    case 4
+        conditions = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test'};
+    case 6
+        conditions = {'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
 end
-manipulation = [eye(4), transpose([0 1 0 0])];
-manipulation(1,1) = 5;
-incentives{3} = manipulation;
 
 
 %%  Simulate

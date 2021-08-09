@@ -80,9 +80,8 @@ elseif length(x)==6         % adaptive model; makes sense for chunk learning
 end
 
 %%
-%C = {{'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
-     %{'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
-C = {{'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
+C = {{'Ns4,baseline'}, {'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
+     {'Ns6,baseline'}, {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
 lik = 0;
 likelihood = [];
 
@@ -95,13 +94,12 @@ for setId = 1:length(C)
     reward = data.r(ix);
     action = data.a(ix);
     state = data.s(ix);
-    acc = data.acc(ix); 
-    setsize = length(unique(state));    % number of distinct states
-    nA = setsize+1;                     % number of distinct actions
-    theta = zeros(setsize,nA);          % policy parameters
-    V = zeros(setsize,1);               % state values
-    Q = zeros(setsize,nA);              % state-action values
-    p = zeros(1,nA); p(1:nA-1) = 1/(nA-1)-0.01; p(nA) = 0.01*(nA-1);     % marginal action probabilities
+    setsize = length(unique(state));         % number of distinct states
+    nA = setsize+1;                            % number of distinct actions
+    theta = zeros(setsize,nA);               % policy parameters
+    V = zeros(setsize,1)+0.01;               % state values
+    Q = zeros(setsize,nA);                   % state-action values
+    p = ones(1,nA)/nA;                       % marginal action probabilities
     beta = agent.beta0;
     ecost = 0;
 
@@ -170,11 +168,11 @@ for setId = 1:length(C)
         end
         
         if agent.lrate_p > 0
-            if a==chunk(1)
-                p(1:setsize) = p(1:setsize) + agent.lrate_p*(policy(1:setsize)-p(1:setsize));
-            else
+            %if a==chunk(1)
+                %p(1:setsize) = p(1:setsize) + agent.lrate_p*(policy(1:setsize)-p(1:setsize));
+            %else
                 p = p + agent.lrate_p*(policy - p); 
-            end
+            %end
             p = p./sum(p);  % marginal update
         end
         

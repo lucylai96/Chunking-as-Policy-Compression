@@ -32,29 +32,36 @@ end
 
 %%
 prettyplot;
-runningAvgRT = movmean(runningAvgRT,5,2);
+runningAvgRT = movmean(runningAvgRT,4,2);
 
 figure;
-plot(runningAvgRT', 'LineWidth', 3);
+bmap = [139 101 8
+        0 139 139] /255;
+colororder(bmap);
+plot(runningAvgRT', 'LineWidth', 4);
 legend('Ns=4', 'Ns=6'); legend('boxoff');
-xlabel('Task Progression'); ylabel('Average RT');
-set(gca, 'XTick',cumIter+1, 'XTickLabel', {'Train','Perform', 'Test'});
+ylabel('Average RT'); xlabel('Task Progression');
+title('Dynamics of Response Time')
+set(gca, 'XTick',cumIter+1, 'XTickLabel', {'Structured Train','Structred Test', 'Random Test'});
 box off;
 
-figure;
-plot(runningAvgRT(:,1:20)', 'LineWidth', 3);
+figure;colororder(bmap);
+plot(runningAvgRT(:,1:20)', 'LineWidth', 4);
 legend('Ns=4', 'Ns=6'); legend('boxoff');
-xlabel('Iterations/stimulus in Train');ylabel('Average RT'); box off;
+title('Structured Train');
+xlabel('Iterations/stimulus');ylabel('Average RT'); box off;
 box off;
 
-figure;
-plot(runningAvgRT(:,21:35)', 'LineWidth', 3);
+figure;colororder(bmap);
+plot(runningAvgRT(:,21:35)', 'LineWidth', 4);
 legend('Ns=4', 'Ns=6'); legend('boxoff');
-xlabel('Iterations/stimulus in Perform');ylabel('Average RT'); box off;
+title('Structured Test')
+xlabel('Iterations/stimulus');ylabel('Average RT'); box off;
 box off;
 
-figure;
-plot(runningAvgRT(:,36:50)', 'LineWidth', 3);
+figure;colororder(bmap);
+plot(runningAvgRT(:,36:50)', 'LineWidth', 4);
 legend('Ns=4', 'Ns=6'); legend('boxoff');
-xlabel('Iterations/stimulus in Test');ylabel('Average RT'); box off;
+title('Random Test');
+xlabel('Iterations/stimulus');ylabel('Average RT'); box off;
 box off;

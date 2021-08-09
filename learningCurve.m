@@ -1,5 +1,10 @@
 function learningCurve(data)
-
+bmap = [
+             16 78 139
+             165 42 42
+             141 182 205    
+             255 140 105] /255;  
+    
 if nargin<1; load('actionChunk_data.mat'); end
 
 stateConds = {'Ns4,baseline', 'Ns4,train', 'Ns6,baseline', 'Ns6,train'};
@@ -20,13 +25,16 @@ for s = 1:nSubj
 end
 
 avgAccuracy = squeeze(nanmean(accuracy, 2));
-bmap = plmColors(4, 'pastel1');
+%avgAccuracy = movmean(avgAccuracy,2);
 figure; hold on;
+colororder(bmap);
 X = 1:nPresent;
 for i = 1:length(stateConds)
     plot(X, avgAccuracy(i,:), 'LineWidth', 3.5);
 end
-legend(stateConds, 'Location', 'southeast');
+legend({'Ns=4 Random Train', 'Ns=4 Structured Train', 'Ns=6 Random Train',...
+        'Ns=6 Structured Train'}, 'Location', 'southeast');
 legend('boxoff');
 xlabel('Number of Iteration'); ylabel('Average Accuracy');
+title('Learning Curve');
 end

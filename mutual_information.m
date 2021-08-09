@@ -49,6 +49,6 @@ function I = mutual_information(state,action,alpha,pS)
         nS = sum(N,2);
         P = psi(N(ix,:)+1) - psi(nS(ix,:)+1);
         
-        I = sum(pS(ix).*sum(N(ix,:).*P./nS(ix),2)) - sum(log(pS(ix)).*pS(ix));
-        %I = pS(ix)*sum(N(ix,:).*P ./nS(ix),2) - sum(log(pS(ix))*pS(ix)');
+        I = pS(ix)*sum(N(ix,:).*P./nS(ix),2) - sum(log(pS(ix))*pS(ix)');
+        %I = sum(pS(ix).*sum(N(ix,:)*P ./nS(ix),2) - sum(log(pS(ix))*pS(ix)'));
     end

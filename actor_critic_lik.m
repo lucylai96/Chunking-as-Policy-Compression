@@ -79,8 +79,8 @@ end
 
 
 %C = unique(data(1).cond);
-C = {{'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
-     {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
+C = {{'Ns4,baseline'}, {'Ns4,train', 'Ns4,perform', 'Ns4,test'},...
+     {'Ns6,baseline'}, {'Ns6,train', 'Ns6,perform', 'Ns6,test'}};
 lik = 0;
 likelih = [];
 
@@ -119,7 +119,7 @@ for setId = 1:length(C)
         likelih(end+1) = logpolicy(1,a);
         cost = logpolicy(a) - log(p(a));       % policy complexity cost
         
-        if agent.m > 2                         % if it's a cost model
+        if agent.m > 1                         % if it's a cost model
             rpe = beta*r - cost - V(s);        % reward prediction error
         else
             rpe = r - V(s);                    % reward prediction error w/o cost

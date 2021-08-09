@@ -23,8 +23,9 @@ subj2 = {'A2YC6PEMIRSOAA', 'A16G6PPH1INQL8', 'A2BK45LZGGWPLX', 'A13WTEQ06V3B6D',
          'A3VEF4M5FIN7KH', 'A6MWJK1YEY5L2', 'A8KX1HFH8NE2Q', 'AJQ71YIGY01HZ',...
          'AOOLS8280CL0Z', 'AR8O1107OAW4V', 'A12HWPFXQPITHD', 'A28U7B76HLCS1U',...
          'AJQ71YIGY01HZ'};
+     
 
-subj = [subj1, subj2];
+subj = [subj1 subj2];
          
 cutoff = 0.6;
 startOfExp = 4;  %change
@@ -45,7 +46,7 @@ for s = 1:length(subj)
     pcorr(s) = corr/(corr+incorr);
 end
 
-hold on;
+figure; hold on;
 histogram(pcorr, 20, 'FaceColor', '#0072BD');
 xlabel('% Accuracy'); ylabel('# of Subjects'); 
 %xlim([0.7 1]); 

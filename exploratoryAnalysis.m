@@ -1,36 +1,42 @@
-function exploratoryAnalysis(data, plotCase)
+function exploratoryAnalysis(plotCase, data)
 prettyplot;
-if nargin==0; load('actionChunk_data.mat'); end
 nSubj = length(data);
 %condition = unique(data(1).cond);
 %condition(strcmp(condition, '')) = [];
 condition = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test',...
     'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
-
+    
+ bmap =[141 182 205     % #8DB6CD LightSkyBlue3
+        255 140 105
+        238 201 0  % #EED5B7 Bisque2
+        155 205 155];   % #9BCD9B DarkSeaGreen3
+%%
 switch plotCase
     case 'avgAcc'
         acc = nan(nSubj, length(condition));
         sem = nan(nSubj, length(condition));
         for s = 1:nSubj
             for c = 1:length(condition)
-                accData = data(s).acc;
+                %accData = data(s).acc;
+                accData = data(s).s == data(s).a;
                 acc(s,c) = nanmean(accData(strcmp(data(s).cond, condition(c))));
             end
         end
-
-        bmap = plmColors(length(condition)/2, 'pastel1');
+            
         figure; hold on;
+        colororder(bmap/255);
         X = 1:2;
         tmp = mean(acc,1); plotAcc(1,:) = tmp(1:length(condition)/2); plotAcc(2,:) = tmp(length(condition)/2+1:length(condition));
-        b = bar(X, plotAcc);
-        sem = nanstd(acc, 1)/sqrt(nSubj) ; sem = reshape(sem, [2 length(condition)/2]);
+        b = bar(X, plotAcc, 'CData', bmap);
+        sem = nanstd(acc, 1)/sqrt(nSubj) ; sem = transpose(reshape(sem, [4 2]));
         errorbar_pos = errorbarPosition(b, sem);
         errorbar(errorbar_pos', plotAcc, min(sem,1-plotAcc), sem, 'k','linestyle','none', 'lineWidth', 1.2);
         ylim([0 1]);
-        legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'north');
+        lgd = legend('Random Train', 'Structured Train', 'Structured Test', 'Random Test', 'Location', 'north');
         legend('boxoff');
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
         xlabel('Set size'); ylabel('Average accuracy');
+        exportgraphics(gcf,[pwd '/figures/avgAcc.png']);
 
 
     case 'avgRT'
@@ -43,19 +49,21 @@ switch plotCase
                 %rt_all{s,c} = rtData(strcmp(data(s).cond, condition(c)));
             end
         end
-
-        bmap = plmColors(4, 'pastel1');
+        
+        figure;
+        colororder(bmap/255);
         hold on;
         tmp = mean(rt,1); plotRT(1,:) = tmp(1:length(condition)/2); plotRT(2,:) = tmp(length(condition)/2+1:length(condition));
         b = bar([1 2], plotRT);
-        sem = nanstd(rt, 1)/sqrt(nSubj); sem = reshape(sem, [2 length(condition)/2]);
+        sem = nanstd(rt, 1)/sqrt(nSubj); sem = transpose(reshape(sem, [4 2]));
         errorbar_pos = errorbarPosition(b, sem);
         errorbar(errorbar_pos', plotRT, sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-        legend('Baseline', 'Train', 'Perform', 'Test', 'Location', 'north');
+        legend('Random Train', 'Structured Train', 'Structured Test', 'Random Test', 'Location', 'north');
+        legend('boxoff');
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
         xlabel('Set size'); ylabel('Average Response Time');
-   
-
+        exportgraphics(gcf,[pwd '/figures/avgRT.png'])
+    
     case 'actionSlips'
         actionSlip = zeros(nSubj, 2);
         slipCond = {'Ns4,test', 'Ns6,test'};
@@ -79,7 +87,7 @@ switch plotCase
         text(xtips, ytips, labels, 'HorizontalAlignment','center',...
             'VerticalAlignment','bottom');
 
-    case 'intachunkRT'
+    case 'intrachunkRT'
         rtChunkCorr = zeros(nSubj, length(condition));
         chunkInit = [2,5];
         for s = 1:nSubj
@@ -98,25 +106,27 @@ switch plotCase
             end
         end
 
-        bmap = plmColors(4, 'pastel1');
         figure; hold on;
+        colororder(bmap/255);
         tmp = nanmean(rtChunkCorr,1); plotRTChunk(1,:) = tmp(1:length(condition)/2); plotRTChunk(2,:) = tmp(length(condition)/2+1:length(condition));
-        sem = nanstd(rtChunkCorr, 1) / sqrt(nSubj); sem = reshape(sem, [2 4]);
+        sem = nanstd(rtChunkCorr, 1) / sqrt(nSubj); sem = transpose(reshape(sem, [4 2]));
         b = bar([1 2], plotRTChunk(:,1:2));
         errorbar_pos = errorbarPosition(b, sem(:,1:2));
         errorbar(errorbar_pos', plotRTChunk(:,1:2), sem(:,1:2), sem(:,1:2), 'k','linestyle','none', 'lineWidth', 1.2);
-        legend('Baseline', 'Train', 'Location', 'northwest');  
+        legend('Random Train', 'Structured Train', 'Location', 'northwest'); legend('boxoff'); 
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
         xlabel('Set size'); ylabel('Intrachunk Response Time');
+        exportgraphics(gcf,[pwd '/figures/intrachunkRT_train.png'])
 
-        bmap = plmColors(4, 'pastel1');
         figure; hold on;
+        colororder(bmap(3:4,:)/255);
         b = bar([1 2], plotRTChunk(:,3:4));
         errorbar_pos = errorbarPosition(b, sem(:,3:4));
         errorbar(errorbar_pos', plotRTChunk(:,3:4), sem(:,3:4), sem(:,3:4), 'k','linestyle','none', 'lineWidth', 1.2);
-        legend('Perform', 'Test', 'Location', 'northwest');  
+        legend('Structured Test', 'Random Test', 'Location', 'northwest');  legend('boxoff'); 
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
         xlabel('Set size'); ylabel('Intrachunk Response Time');
+        exportgraphics(gcf,[pwd '/figures/intrachunkRT_test.png'])
         
     
     case 'error_plot'

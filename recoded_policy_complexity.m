@@ -1,8 +1,10 @@
-function complexity = recoded_policy_complexity(data)
+function complexity = recoded_policy_complexity(data, conds)
 if nargin<1; load('actionChunk_data.mat'); end
 nSubj = length(data);
-conds = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test', ...
-         'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
+if nargin==1
+    conds = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test', ...
+            'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
+end
 complexity = nan(nSubj, length(conds));
 
 for subj = 1:nSubj
@@ -22,8 +24,12 @@ for subj = 1:nSubj
         end
         state(isnan(action))=[]; action(isnan(action))=[];
         pS = pS/sum(pS,'all');
-        complexity(subj, c) = mutual_information(state,action,1/nA,pS);
+        %complexity(subj, c) = mutual_information(state,action,1/nA,pS');
+        complexity(subj, c) = mutual_information(state,action);
     end
+    
+end
+
 end
         
             

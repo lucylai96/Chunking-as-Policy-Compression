@@ -13,8 +13,9 @@ condition = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test', ...
              'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
 %condition = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test'};
 
-[reward, complexity] = calculateRPC(data, condition, 'regular');             % when each state is rewarded equally
-%[reward, complexity] = calculateRPC(data, condition,'incentive_manip');     % when states are rewarded unequally
+recode = 1;     % whether to calculate recoded policy complexity
+[reward, complexity] = calculateRPC(data, condition, 'regular', recode);             % when each state is rewarded equally
+%[reward, complexity] = calculateRPC(data, condition,'incentive_manip', recode);     % when states are rewarded unequally
 
 %% Average policy complexity for different blocks
 avgComplx = reshape(mean(complexity,1), [4 2])';
@@ -276,8 +277,11 @@ end
 
 
 %%
-function [reward, complexity] = calculateRPC(data, condition, manip)
-complexity = recoded_policy_complexity(data, condition);
+function [reward, complexity] = calculateRPC(data, condition, manip, recode)
+if recode
+    complexity = recoded_policy_complexity(data, condition);
+end
+
 switch manip
     case 'regular'      
         reward = nan(nSubj, length(condition));
@@ -287,6 +291,7 @@ switch manip
                 state = data(s).s(idx);
                 action = data(s).a(idx);
                 reward(s,c) = mean(state==action);
+                if ~recode; complexity(s,c) = mutual_information(state,action); end
             end
         end
 
@@ -298,6 +303,7 @@ switch manip
                 state = data(s).s(idx);
                 action = data(s).a(idx);
                 reward(s,c) = sum(data(s).r(idx));
+                if ~recode; complexity(s,c) = mutual_information(state,action); end
             end
         end
         reward = reward ./ [160 160 120 120 200 200 150 150];

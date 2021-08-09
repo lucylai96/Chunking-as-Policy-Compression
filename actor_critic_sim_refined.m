@@ -1,4 +1,4 @@
-function simdata = actor_critic_sim(agent, data, incentives)
+function simdata = actor_critic_sim_refined(agent, data, incentives)
 
 if ~isfield(agent, 'beta')
     agent.beta = agent.beta0;

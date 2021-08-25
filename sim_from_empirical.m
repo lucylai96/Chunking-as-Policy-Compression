@@ -1,4 +1,10 @@
 function simdata = sim_from_empirical(modelIdx, data, results)
+%{
+    Simulate the agent with our fitted model parameter
+    Usage:
+        simdata = sim_from_empirical()
+%}
+
 addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion/matlab_data');
 prettyplot
 if nargin < 3; load model_fitting_all.mat; end
@@ -24,15 +30,8 @@ for s = 1:length(data)
         agent.C = [];
         agent.lrate_beta = 0;
         agent.lrate_e = 0.1;
-    %{
-    elseif agent.m == 5
-        agent.lrate_beta = 0;
-        agent.lrate_p = 0;
-        agent.lrate_e = 0.1;   % MOMENTUM MODEL
-     %}
     elseif agent.m == 6
-        agent.lrate_e = 0.1;
-        
+        agent.lrate_e = 0.1;        
     end
     
     for k = 1:length(results.param)

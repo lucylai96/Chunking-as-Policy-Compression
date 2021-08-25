@@ -1,9 +1,13 @@
 function [results,bms_results] = fit_models(models, data)
 %{
+no cost model (2 free params)
+    agent.lrate_theta:  actor learning rate
+    agent.lrate_V:      critic learning rate
+
 reduced fixed model (3 free params)
-    agent.beta
-    agent.lrate_theta
-    agent.lrate_V
+    agent.beta:         fitted value of beta
+    agent.lrate_theta:  actor learning rate
+    agent.lrate_V:      critic learning rate
 
 fixed model (4 free params)
     agent.beta:         fitted value of beta
@@ -26,14 +30,6 @@ adaptive model (6 free params)
     agent.lrate_beta:   learning rate for beta
     agent.lrate_p:      learning rate for marginal action probability
 
-momentum reduced fixed model (7 free params)
-    agent.beta
-    agent.lrate_theta
-    agent.lrate_V
-    agent.lrate_rho
-    agent.epsilon
-    
- 
 %}
 
 addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion/mfit');
@@ -70,25 +66,9 @@ for i = 1:length(models)
         end
     end     
   
-    if contains(m, 'momentum')
-        clear param;
-        btmin = 1e-3; btmax = 30;
-        param(1) = struct('name','beta','logpdf',@(x) 0,'lb',btmin,'ub',btmax,'label','\beta');
-        param(2) = struct('name','lrate_theta','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_{\theta}');
-        param(3) = struct('name','lrate_V','lb',0,'ub',1,'logpdf',@(x) sum(log(betapdf(x,a,b))),'label','lrate_V');
-        param(4) = struct('name', 'lrate_rho', 'lb', 0, 'ub',5,'logpdf',@(x) 0, 'label', 'lrate_rho');
-        param(5) = struct('name', 'epsilon', 'lb', 0, 'ub',5,'logpdf',@(x) 0, 'label', 'epsilon');
-       
-    end
     
     if contains(m, 'chunk')
         likfun = @likelihood_fun_chunk;
-    elseif contains(m, 'generalized')
-        likfun = @actor_critic_lik_generalized;
-    elseif contains(m, 'momentum')
-        likfun = @likelihood_momentum;
-    elseif contains(m, 'recoded')
-        likfun = @likelihood_fun_chunk_recoded;
     else
         likfun = @actor_critic_lik;
     end
@@ -99,7 +79,8 @@ end
 
 bms_results = mfit_bms(results);
 
-%% Comparing models by plotting BIC & AIC
+%% Comparing models by plotting BIC
+
 addpath([pwd '/Violinplot/']);
 for m = 1:length(results)
     bic(:,m) = results(m).bic;
@@ -112,8 +93,5 @@ colororder([141 182 205
 violinplot(bic);
 ylim([0 4000]); ylabel('BIC'); 
 set(gca, 'XTick',1:6, 'XTickLabel', {'noCost,noChunk', 'noCost,Chunk', 'Fixed,noChunk', 'Fixed,Chunk', 'Adaptive,noChunk', 'Adaptive,Chunk'});
-
-
-
 
 end

@@ -1,9 +1,8 @@
 function learningCurve(data)
-bmap = [
-             16 78 139
-             165 42 42
-             141 182 205    
-             255 140 105] /255;  
+bmap =  [16 78 139
+         165 42 42
+         141 182 205    
+         255 140 105] /255;  
     
 if nargin<1; load('actionChunk_data.mat'); end
 

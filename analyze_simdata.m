@@ -1,7 +1,7 @@
 function analyze_simdata()
 
 load('actionChunk_data.mat');
-load('fixed_adaptive_chunk');
+%load('fixed_adaptive_chunk');
 condition = {'Ns4,baseline', 'Ns4,train', 'Ns4,perform', 'Ns4,test', ...
              'Ns6,baseline', 'Ns6,train', 'Ns6,perform', 'Ns6,test'};
 bmap = [141 182 205    
@@ -59,7 +59,6 @@ legend(labels, 'Location', 'northeast');
 legend('boxoff');
 set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4', 'Ns=6'});
 xlabel('Set size'); ylabel('P(choose C|S_{init})');
-ylim([0 0.5]);
 box off;
 
 

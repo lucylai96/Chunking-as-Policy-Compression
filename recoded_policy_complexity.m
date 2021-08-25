@@ -24,8 +24,8 @@ for subj = 1:nSubj
         end
         state(isnan(action))=[]; action(isnan(action))=[];
         pS = pS/sum(pS,'all');
-        %complexity(subj, c) = mutual_information(state,action,1/nA,pS');
-        complexity(subj, c) = mutual_information(state,action);
+        complexity(subj, c) = mutual_information(state,action,1/nA,pS');
+        %complexity(subj, c) = mutual_information(state,action);
     end
     
 end

@@ -49,3 +49,27 @@ We can then inspect the behavior of the simulated data using `exploratory_analys
 
 
 ## Main Functions for Experiment 2 (Load & Incentive manipulation)
+
+### *analyze_rawdata.m*
+
+Converts raw jsPsych experiment data saved in .csv files to MATLAB data structures. Usage:
+```
+data = analyze_rawdata('modified_freq_discr')
+```
+Use the specifier 'modified_freq_discr' for the load & incentive manipulation experiment with modified frequency discrimination task. 
+
+### *exploratory_analysis_exp2.m*
+
+Exploratory analysis and plotting on the average accuracy, average RT, intrachunk RT in different blocks of experiment 2. Usage:
+```
+exploratory_analysis_exp1(plotCase, data)
+```
+where `plotCase` is a string of the analysis to be conducted. It can be `'avgAcc'`, `'avgRT'`, or `'intrachunkRT'`.
+
+### *policy_complexity_analysis_exp2.m*
+
+Average policy complexity and reward-complexity curves in different blocks. 
+
+### *sim_rc_tradeoff.m*
+
+Simulate and plot the average reward, the policy complexity, and the reward-complexity tradeoff under the load and incentive manipulation conditions.

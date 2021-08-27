@@ -193,15 +193,8 @@ plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_
 plot_RPCcurve(reward, complexity, [1 2 3 4], {'Random', 'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
 
-%% Statistical tests 
-% on average accuracy
+%% Statistical tests on average accuracy
 [h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left')
 [h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left')
 [h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left')
-
-% on policy complexity
-[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right')
-[h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right')
-[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left')
-[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left')
 end

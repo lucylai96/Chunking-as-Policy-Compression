@@ -153,5 +153,11 @@ switch plotCase
         set(gca, 'XTick',1:2, 'XTickLabel', {'Ns=4,test', 'Ns=6,test'});
         ylabel('Average # of incorrect responses');
 end        
-           
+
+%% Statistical tests for intrachunk RT reduction
+
+[h,p] = ttest2(rtChunkCorr(:,1), rtChunkCorr(:,2), 'tail', 'right')
+[h,p] = ttest2(rtChunkCorr(:,5), rtChunkCorr(:,6), 'tail', 'right')
+[h,p] = ttest2(rtChunkCorr(:,3), rtChunkCorr(:,4), 'tail', 'right')
+[h,p] = ttest2(rtChunkCorr(:,7), rtChunkCorr(:,8), 'tail', 'left')
 end

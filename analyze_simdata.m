@@ -23,8 +23,8 @@ end
 
 
 %% Exploratory Analysis
-learningCurve(simdata);
-exploratoryAnalysis('avgAcc', simdata);
+learning_curve(simdata);
+exploratory_analysis_exp1('avgAcc', simdata);
            
 
 %% The probability of using chunks VS primitive action

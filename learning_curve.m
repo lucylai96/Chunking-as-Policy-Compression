@@ -1,4 +1,4 @@
-function learningCurve(data)
+function learning_curve(data)
 bmap =  [16 78 139
          165 42 42
          141 182 205    

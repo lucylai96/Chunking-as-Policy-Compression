@@ -19,12 +19,79 @@ var fixation = {
   };
 
 
-var survey_occurences = {
-  type: 'survey-text',
-  questions: [{prompt: 'Please enter the sum of each number that appeared under the picture:', value: 'Sum'}],
-  button_label: 'Submit'
-}; 
- 
+function create_occurence_survey(num, order){
+  var multi_choice = {
+    type: 'survey-multi-choice',
+    questions: [
+    {prompt: 
+      '<p class="center-content">Which of the two pictures below appeared more often in this block? </p>' +
+      '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:580px;"><tr>' +
+      '<td><img src="img/set' +num+ '/S' +order[0]+ '.jpg" style="width: 220px; height: 150px"></td>' +
+      '<td><img src="img/set' +num+ '/S' +order[1]+ '.jpg" style="width: 220px; height: 150px"></td>' +
+      '</tr><tr>' +
+      '<td>Picture A</td><td>Picture B</td>' +
+      '</tr></table>',
+      options: ["Picture A", "Picture B", "They had the same number of occurrences"]
+      }],
+    };
+  return multi_choice;
+}
+
+function create_occurence_feedback(freq_order, stateDist){
+  var freq_discr_feedback = {
+    type: 'html-keyboard-response',
+    stimulus: function(){
+    var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
+    var response = prev_trial.select('responses').values[0];
+    if (stateDist[freq_order[0]] > stateDist[freq_order[1]]){
+      var isCorrect = response === "Picture A";
+    }
+    else if (stateDist[freq_order[0]] < stateDist[freq_order[1]]){
+      var isCorrect = response === "Picture B";
+    }
+    else{
+      var isCorrect = response === "They had the same number of occurrences";
+    }
+
+    if (isCorrect){
+      return ['<p class="center-content">Congratulations, you selected the correct answer! </p>'+
+        '<p class="center-content">A bonus of $2 has been assigned to you. </p>'+ 
+        '<p class="center-content">You will know the total amount of your performance-based bonus at the end of the task. </p>' +
+        '<p class="center-content">Please press any key to continue. </p>' ];
+    }
+    else{
+      return ['<p class="center-content">Underfortunately, the answer you selected was incorrect. </p>'+
+        '<p class="center-content">Please press any key to continue. </p>'];
+    }
+  },
+  stimulus_duration: 20000,
+  trial_duration: 20000
+  }
+  return freq_discr_feedback;
+}
+
+
+function bonus_freq_discr(freq_order, stateDist){
+  var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
+  var response = prev_trial.select('responses').values[0];
+  if (stateDist[freq_order[0]] > stateDist[freq_order[1]]){
+    var isCorrect = response === "Picture A";
+  }
+  else if (stateDist[freq_order[0]] < stateDist[freq_order[1]]){
+    var isCorrect = response === "Picture B";
+  }
+  else{
+    var isCorrect = response === "They had the same number of occurrences";
+  }
+
+  if (isCorrect){
+    return 2;
+  }
+  else{
+    return 0;
+  }
+}
+
 
 function pushFeedback(num, block, chunk, timeline){
     var feedback = {
@@ -52,37 +119,8 @@ function pushFeedback(num, block, chunk, timeline){
   timeline.push(feedback);
 };
 
-function pushFeedback_load(timeline, presence, rand_num){
-  var feedback = {
-    type: 'html-keyboard-response',
-    stimulus: function(){
-      var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
-      var feedback_img = prev_trial.select('stimulus').values[0];
-      console.log(feedback_img);
-      var feedback = prev_trial.select('key_press').values[0];
-      if (prev_trial.select('correct').values[0]){
-        return '<img src="' + feedback_img + '" width="540" height = "360" style="border:16px solid orange">';
-      }
-      else{ 
-        return '<img src="' + feedback_img + '" width="540" height = "360">'
-      }
-    },
-    choices: jsPsych.NO_KEYS,
-    prompt: function(){
-      if (presence){
-        return '<p><b>'+rand_num+'</b></p>';
-      }
-      else{
-        return '<p>-</p>';
-      }
-    },  
-    trial_duration: 350
-    }
-  timeline.push(feedback);
-};
-
  // push trials
- function pushTrials(set, num, block, chunk, timeline){
+function pushTrials(set, num, block, chunk, timeline){
   var trial = {
     type: 'image-keyboard-response',
     stimulus: eval('stimulus_set' + set + '[num-1].stimulus'),
@@ -102,76 +140,45 @@ function pushFeedback_load(timeline, presence, rand_num){
   timeline.push(fixation);
 };
 
- // push trials
- function pushTrials_load(set, num, timeline){
-  var presence = Math.random() < 0.3;
-  var rand_num = Math.floor(Math.random()*10) + 1;
-  var trial = {
-    type: 'image-keyboard-response',
-    stimulus: eval('stimulus_set' + set + '[num-1].stimulus'),
-    stimulus_height: 360, stimulus_width: 540,
-    choices: ['s','d','h','j'],
-    trial_duration: 2500,
-    data: eval('stimulus_set' + set + '[num-1].data'),
-    prompt: function(){
-      if (presence){
-        return '<p><b>'+rand_num+'</b></p>';
-      }
-      else{
-        return '<p>-</p>';
-      }
-    },
-    on_finish: function(data){
-      data.correct = data.key_press == data.correct_response;
-      trial_node_id = jsPsych.currentTimelineNodeID();
-      var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-      jsPsych.setProgressBar(curr_progress_bar_value + (1/480));
-    }
-  }
-  timeline.push(trial);
-  pushFeedback_load(timeline, presence, rand_num);
-  timeline.push(fixation);
-};
-
-
-
 
 function pushBlocks(timeline, set, condition, chunk){
   // i is the picture set to be used
   // condition tells us whether it is structured or random
   // chunk tells us configuraiton of the chunk
   if (condition=='random'){
-    var stateDist = [30, 30, 30, 30, 0];
+    var probs = [1, 1, 1, 1];
+    var mult = SJS.Multinomial(120, probs);
+    var stateDist = mult.draw();
+    stateDist = stateDist.concat([0]);
   }
   else{
-    var stateDist = [30, 30, 30, 30, 30];
-    stateDist[chunk[0]-1] = 0;
-    stateDist[chunk[1]-1] = 0;
+    var probs = [1, 1];
+    var mult = SJS.Multinomial(60, probs);
+    var stateDist_tmp = mult.draw();
+    var stateDist = [0, 0, 0, 0, 30];
+    var idx = 0;
+    for (let i=0; i<stateDist.length-1; i++){
+      if (i != chunk[0]-1 && i != chunk[1]-1){
+        stateDist[i] = stateDist_tmp[idx];
+        idx = idx + 1;
+      }
+    }
   }
 
+  console.log(condition + ":" + stateDist);
   var randomizedTrials = jsPsych.randomization.repeat([1,2,3,4,7], stateDist);
-  for (i=0; i<randomizedTrials.length; i++){
+  for (let i=0; i<randomizedTrials.length; i++){
     num = randomizedTrials[i];
     if (num < 7){
-      if (condition == 'structured_load'){
-        pushTrials_load(set, num, timeline);
-      }
-      else{
-        pushTrials(set, num, condition, chunk, timeline);
-      }
+      pushTrials(set, num, condition, chunk, timeline);
     }
     else{
-      if (condition == 'structured_load')
-      {
-        pushTrials_load(set, chunk[0], timeline);
-        pushTrials_load(set, chunk[1], timeline);
-      }
-      else{
-        pushTrials(set, chunk[0], condition, chunk, timeline);
-        pushTrials(set, chunk[1], condition, chunk, timeline);
-      }
+      pushTrials(set, chunk[0], condition, chunk, timeline);
+      pushTrials(set, chunk[1], condition, chunk, timeline); 
     }
   }
+
+  return stateDist;
 }
 
 
@@ -225,12 +232,14 @@ function saveData(name, data) {
 
 
  // Calculate bonus at end
+function create_bonus_page(freq_order, stateDist){
   var bonus_block = {
     type: 'instructions',
     pages: function() {
-      var correct_bonus = Math.round(80 * jsPsych.data.get().filter({correct: true}).count() / 480); 
+      var correct_bonus = Math.round(60 * jsPsych.data.get().filter({correct: true}).count() / 480); 
+      correct_bonus = 0.1 * correct_bonus + bonus_freq_discr(freq_order, stateDist);
       jsPsych.data.addDataToLastTrial({"bonus": correct_bonus});
-      return ['<p class="center-content">You won a bonus of <b>$' + (correct_bonus == 1 ? '10.00' : 0.1 * correct_bonus + 2) + '</b>.</p>' +
+      return ['<p class="center-content">You won a bonus of <b>$' + (correct_bonus == 1 ? '10.00' : correct_bonus) + '</b>.</p>' +
       '<p class="center-content"> IMPORTANT: <b>Press "Next"</b> to continue to the survey questions.</p>'];
     },
     show_clickable_nav: true,
@@ -238,6 +247,8 @@ function saveData(name, data) {
       jsPsych.setProgressBar(1);
     }
   };
+  return bonus_block;
+}
 
 
 // survey comment at the end
@@ -269,7 +280,7 @@ function saveData(name, data) {
     '<p class="center-content"> <b>Thank you for participating in our experiment!</b></p>' +
     '<p class="center-content"> <b>Please wait on this page for a minute while your data saves.</b></p>'+
     '<p class="center-content"> Your bonus will be applied after your data has been processed and your HIT has been approved.</p>'+
-    '<p class="center-content"> Please email zixiang_huang@fas.harvard.edu with any additional questions or concerns. You may now exit this window.</p>'
+    '<p class="center-content"> Please email zixiang.huang@mail.mcgill.ca with any additional questions or concerns. You may now exit this window.</p>'
     ],
     show_clickable_nav: false,
     allow_backward: false,

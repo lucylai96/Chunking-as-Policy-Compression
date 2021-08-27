@@ -1,4 +1,4 @@
-function simdata= sim_rc_tradeoff()
+function simdata = sim_rc_tradeoff()
 rng(0);
 load('data_manip_2.mat');
 

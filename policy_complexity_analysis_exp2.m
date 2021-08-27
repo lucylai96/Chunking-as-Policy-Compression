@@ -1,4 +1,4 @@
-function policy_complexity_analysis_load_incentive()
+function policy_complexity_analysis_exp2()
 
 prettyplot;
 load('load_incentive_data.mat');   

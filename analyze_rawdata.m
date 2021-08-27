@@ -252,7 +252,6 @@ switch experiment
             corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
             incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
             data(s).performance = corr/(corr+incorr);
-            data(s).bonus = round(data(s).performance * 8 + 2, 2);
             
             A(:,16) = strrep(A(:,16), 'true', '1');
             A(:,16) = strrep(A(:,16), 'false', '0');

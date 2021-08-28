@@ -3,8 +3,9 @@ function data = analyze_rawdata(experiment)
     Analyze raw jsPsych experiment data saved in .csv files
     Usage:
         data = analyze_rawdata('setsize_manip')         for 1st experiment
-        data = analyze_rawdata('load_incentive_manip')  for 2nd experiment
+        data = analyze_rawdata('modified_freq_discr')   for 2nd experiment
 %}
+prettyplot;
 
 switch experiment
     case 'setsize_manip'
@@ -252,6 +253,7 @@ switch experiment
             corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
             incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
             data(s).performance = corr/(corr+incorr);
+            data(s).bonus = A{1456, 19};
             
             A(:,16) = strrep(A(:,16), 'true', '1');
             A(:,16) = strrep(A(:,16), 'false', '0');

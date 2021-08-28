@@ -1,4 +1,4 @@
-function analysis_manip_2(data)
+function analysis_manip(data)
 
 prettyplot;
 if nargin<1; load('data_manip_2.mat'); end

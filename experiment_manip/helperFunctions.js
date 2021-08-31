@@ -279,7 +279,8 @@ function create_bonus_page(freq_order, stateDist){
     pages: [
     '<p class="center-content"> <b>Thank you for participating in our experiment!</b></p>' +
     '<p class="center-content"> <b>Please wait on this page for a minute while your data saves.</b></p>'+
-    '<p class="center-content"> Your bonus will be applied after your data has been processed and your HIT has been approved.</p>'+
+    '<p class="center-content"> <b>In the meantime, please navigate to this page in a different tab: https://harvard.az1.qualtrics.com/jfe/form/SV_0kwdhI6iH5OSrBA.</b></p>'+
+    '<p class="center-content"> Your bonus will be applied after your data (including the survey) has been processed and your HIT has been approved.</p>'+
     '<p class="center-content"> Please email zixiang.huang@mail.mcgill.ca with any additional questions or concerns. You may now exit this window.</p>'
     ],
     show_clickable_nav: false,

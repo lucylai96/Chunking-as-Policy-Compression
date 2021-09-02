@@ -213,11 +213,26 @@ function startExperiment(){
       timeline: timeline,
       show_progress_bar: true,
       auto_update_progress_bar: false,
-      on_finish: function() {
-      window.location.href = "https://harvard.az1.qualtrics.com/jfe/form/SV_0kwdhI6iH5OSrBA";
-      //}
     })
   };
+
+//define redirect link for qualtrics and add turk variables
+var urlVar = jsPsych.data.urlVariables();
+var turkInfo = jsPsych.turk.turkInfo();
+
+// add mturk info to data csv
+
+jsPsych.data.addProperties({
+assignmentID: turkInfo.assignmentId
+});
+
+jsPsych.data.addProperties({
+mturkID: turkInfo.workerId
+});
+
+jsPsych.data.addProperties({
+hitID: turkInfo.hitId
+});
 
 // Save data to CSV
 function saveData(name, data) {
@@ -268,8 +283,8 @@ function create_bonus_page(freq_order, stateDist){
       var responses = JSON.parse(data.responses);
       var subject_id = responses.Q0;
       console.log(subject_id)
-      saveData(subject_id, jsPsych.data.get().csv());;
-    },
+      saveData(subject_id, jsPsych.data.get().csv());
+      },
   }
 
 
@@ -280,9 +295,13 @@ function create_bonus_page(freq_order, stateDist){
     '<p class="center-content"> <b>Thank you for participating in our experiment!</b></p>' +
     '<p class="center-content"> <b>Please wait on this page for a minute while your data saves.</b></p>'+
     '<p class="center-content"> Your bonus will be applied after your data (including the survey) has been processed and your HIT has been approved.</p>'+
-    '<p class="center-content"> Please email zixiang.huang@mail.mcgill.ca with any additional questions or concerns. You will be redirected to the survey shortly.</p>'
+    '<p class="center-content"> Please email zixiang.huang@mail.mcgill.ca with any additional questions or concerns. Please click "Next"; You will be redirected to the survey shortly.</p>'
     ],
-    show_clickable_nav: false,
+    show_clickable_nav: true,
     allow_backward: false,
-    show_page_number: false
+    show_page_number: false,
+    on_finish: function(data) {
+    window.location.href = "https://harvard.az1.qualtrics.com/jfe/form/SV_0kwdhI6iH5OSrBA/?&workerId=" + turkInfo.workerId + "&assignmentId=" + turkInfo.assignmentId + "&hitId=" + turkInfo.hitId;
+     },
+
   };

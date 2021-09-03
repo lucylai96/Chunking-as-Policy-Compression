@@ -1,7 +1,6 @@
-function analysis_manip(data)
+function analyze_manip()
 
 prettyplot;
-if nargin<1; load('data_manip_2.mat'); end
 nSubj = length(data);
 threshold = 0.4;   % lowest accuracy in each block
 condition = {'random', 'structured_normal', 'structured_load', 'structured_incentive'};
@@ -79,11 +78,11 @@ sem = nanstd(rt,1) / sqrt(nSubj);
 
 figure; hold on;
 X = 1:length(condition);
-b = bar(X, mean(rt,1), 0.7, 'FaceColor', 'flat');
+b = bar(X, nanmean(rt,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
     b.CData(i,:) = bmap(i,:);
 end
-errorbar(X, mean(rt,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar(X, nanmean(rt,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Average RT (ms)');
 
@@ -113,7 +112,7 @@ b = bar(X, nanmean(rtChunk,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
     b.CData(i,:) = bmap(i,:);
 end
-errorbar(X, mean(rtChunk,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar(X, nanmean(rtChunk,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Intrachunk RT (ms)');
 
@@ -137,27 +136,29 @@ for s = 1:nSubj
 end
 
 for i = 1:3
-    avgRT(2,i,:) = avgRT(2,i,:) / nanmean(avgRT(1,i,:),3);
-    avgRT(1,i,:) = avgRT(1,i,:) / nanmean(avgRT(1,i,:),3);
+    avgAll = nanmean(avgRT(:,i,:), 1);
+    avgRT(:,i,:) = avgRT(:,i,:) ./ avgAll;
     sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);
     sem(1,i) = nanstd(squeeze(avgRT(1,i,:))) / sqrt(nSubj);
 end
 
-b = bar(mean(avgRT,3), 'FaceColor', 'flat');
+figure;
+b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
 hold on;
 for i = 1:3
     b(i).CData(1,:) = bmap(i+1,:);
     b(i).CData(2,:) = bmap(i+1,:);
 end
 box off; ylim([0 1.2]);
-ylabel('Normalized RT (ms)'); 
+ylabel('Normalized RT (ms)'); box off;
 set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
-legend('Baseline', 'Load manipulation', 'Incentive manipulation');
+legend('Baseline', 'Load manipulation', 'Incentive manipulation', 'location', 'northeast');
+legend('boxoff');
 errorbar_pos = errorbarPosition(b, sem);
-errorbar(errorbar_pos', mean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 
 figure; hold on;
-tmp = mean(avgRT,3); 
+tmp = nanmean(avgRT,3); 
 h = bar(tmp(2,:), 0.7, 'FaceColor', 'flat');
 set(gca, 'XTick',1:3, 'XTickLabel', {'Baseline', 'Load', 'Incentive'});
 for i = 1:length(conds)

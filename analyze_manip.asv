@@ -138,8 +138,8 @@ for s = 1:nSubj
 end
 
 for i = 1:3
-    avgRT(2,i,:) = squeeze(avgRT(2,i,:)) ./ avgAll(i,:)';
-    avgRT(1,i,:) = squeeze(avgRT(1,i,:)) ./ avgAll(i,:)';
+    avgRT(2,i,:) = squeeze(avgRT(2,i,:)) / avgAll(i,:);
+    avgRT(1,i,:) = squeeze(avgRT(1,i,:)) / avgAll(i,:);
     sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);
     sem(1,i) = nanstd(squeeze(avgRT(1,i,:))) / sqrt(nSubj);
 end

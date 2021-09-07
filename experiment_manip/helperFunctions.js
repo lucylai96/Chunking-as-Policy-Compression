@@ -303,5 +303,5 @@ function create_bonus_page(freq_order, stateDist){
     on_finish: function(data) {
     window.location.href = "https://harvard.az1.qualtrics.com/jfe/form/SV_0kwdhI6iH5OSrBA/?&workerId=" + turkInfo.workerId + "&assignmentId=" + turkInfo.assignmentId + "&hitId=" + turkInfo.hitId;
      },
-
+                       
   };

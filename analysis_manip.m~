@@ -139,6 +139,7 @@ end
 
 for i = 1:3  % nonchunk RTs / non-chunk RTs
     avgRT(2,i,:) = squeeze(avgRT(2,i,:)) ./ squeeze(avgRT(1,i,:)); % ICRTs  / nonchunk RTs (<1 means more chunking)
+    
     avgRT(1,i,:) = squeeze(avgRT(1,i,:)) ./ squeeze(avgRT(1,i,:)); % nonchunk RTs / nonchunk RTs
     sem(1,i) = nanstd(squeeze(avgRT(1,i,:))) / sqrt(nSubj);
     sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);

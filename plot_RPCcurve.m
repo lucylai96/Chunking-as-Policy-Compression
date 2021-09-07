@@ -64,8 +64,9 @@ elseif strcmp(experiment, 'load_incentive_manip')
         %plots(i) = plot(X, Y, 'Color', color(i,:), 'LineWidth', 4);
     end
     %legend(plots, legendContent, 'Location', 'southeast');
-    %legend('boxoff');
-    xlim([0.4 1.4]); ylim([0 1]);
+    legend(legendContent, 'Location', 'southeast');
+    legend('boxoff');
+    xlim([0.4 max(complexity(:))]); ylim([0 max(reward(:))]);
     xlabel('Policy complexity'); ylabel('Average reward');
     
 end

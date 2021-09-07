@@ -1,8 +1,11 @@
 function simdata = actor_critic_sim_incentive(agent, data, setsize, incentives)
 
+% called by sim_incentive_manip
+% simulation of experiment 2 (incentive only)
+
 if nargin < 4 || isempty(incentives)
     for i = 1:4
-    incentives{i} = [eye(4), transpose([0 1 0 0])];
+    incentives{i} = [eye(4), transpose([0 1 0 0])]; % normal incentives 
     end
 end
 
@@ -34,7 +37,7 @@ for setId = 1:length(cond)
     condition = data.cond(idx);
     state = data.s(idx);
     nA = setsize + 1; 
-    reward = incentives{setId};
+    reward = incentives{setId}; % incentives stores reward context of environment
     if setId==2
         theta = zeros(setsize, nA);               
         V = zeros(setsize,1)+0.01;             

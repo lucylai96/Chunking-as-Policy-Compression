@@ -1,4 +1,7 @@
 function exploratory_analysis_exp1(plotCase, data)
+% all of model independent analysis for exp 1 
+% can plot diff analysis
+
 prettyplot;
 if nargin==1; load('actionChunk_data.mat'); end
 nSubj = length(data);

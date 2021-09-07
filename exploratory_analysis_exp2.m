@@ -1,4 +1,6 @@
 function exploratory_analysis_exp2(plotCase, data)
+% all of model independent analysis for exp 2
+% can plot diff analysis
 
 prettyplot;
 if nargin<2; load('load_incentive_data.mat'); end

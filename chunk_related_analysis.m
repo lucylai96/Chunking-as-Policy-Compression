@@ -1,4 +1,6 @@
 function chunk_related_analysis()
+% For experiment 1: statistics for determining if chunking is related to
+% policy complexity
 
 load('actionChunk_data.mat');
 nSubj = length(data);

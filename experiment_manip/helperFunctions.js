@@ -294,7 +294,7 @@ function create_bonus_page(freq_order, stateDist){
     pages: [
     '<p class="center-content"> <b>Thank you for participating in our experiment!</b></p>' +
     '<p class="center-content"> <b>Please wait on this page for a minute while your data saves.</b></p>'+
-    '<p class="center-content"> Your bonus will be applied after your data (including the survey) has been processed and your HIT has been approved.</p>'+
+    '<p class="center-content"> Your bonus will be applied after your data (including the survey) has been processed and your HIT has been approved. YOU MUST DO THE SURVEY TO BE PAID.</p>'+
     '<p class="center-content"> Please email zixiang.huang@mail.mcgill.ca with any additional questions or concerns. Please click "Next"; You will be redirected to the survey shortly.</p>'
     ],
     show_clickable_nav: true,

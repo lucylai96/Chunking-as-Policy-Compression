@@ -9,7 +9,7 @@ if ~isempty(isnan(A))
     r = unique(r);
     A(r,:) = []; 
     disp('subjects who didn`t do survey:')
-    subj{r(1)}
+    size(r)
 end
 % question table of contents
 % SCZ: 1-43
@@ -36,10 +36,34 @@ A(:,recode_idx) = ~A(:,recode_idx);
 % SHAPs: 0-14, 1-2 is 1 and 3-4 is 0, high scores represent low pleasure,
 % >3 is abnormal (already reverse coded, higher rating indicates
 % more anhedonia)
-% TEPS: add together
+% TEPS: 25-120.add together
 % AMI: 0-72, add scores (already reverse coded, higher rating indicated
 % more apathy)
 
+% SCZ: 1-43
+idx = 1:43;
+survey.scz = sum(A(:,idx),2);
 
+% OCI-R: 44-61
+idx = 44:61;
+survey.oci = sum(A(:,idx),2);
+
+% PHQ-9: 62-70
+idx = 62:70;
+survey.phq = sum(A(:,idx),2);
+
+% SHAPs: 71-84
+idx = 71:84;
+survey.shaps = sum(A(:,idx),2);
+
+% TEPS: 85-102
+idx = 85:102;
+survey.teps = sum(A(:,idx),2);
+
+% AMI: 103-120
+idx = 103:120;
+survey.ami = sum(A(:,idx),2);
+
+save('survey_data.mat','survey')
 
 end

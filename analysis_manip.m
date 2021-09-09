@@ -1,7 +1,7 @@
 function analysis_manip(data)
 
 prettyplot;
-if nargin<1; load('data_manip_2.mat'); end
+if nargin<1; load('data_manip_3.mat'); end
 nSubj = length(data);
 threshold = 0.4;   % lowest accuracy in each block
 condition = {'random', 'structured_normal', 'structured_load', 'structured_incentive'};
@@ -255,7 +255,7 @@ plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
 
-%% Test whether reward capacity changed from 0 and whether complexity changed from 
+%% Test whether policy capacity changed from 0 in reward and whether complexity changed from 
 plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
 plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 [h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0

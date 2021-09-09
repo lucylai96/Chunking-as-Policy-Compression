@@ -90,10 +90,10 @@ switch experiment
             data(s).N = nTrials;
             
         end
-  
+        
         %save(savepath, 'data');
-      
-%% 
+        
+        %%
     case 'load_incentive_manip'
         addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion');
         folder = 'experiment_manip/data/';
@@ -111,7 +111,7 @@ switch experiment
         
         subj = [subj1 subj2];
         nTrials = 480;
-        %savepath = 'data_manip_2.mat';
+        savepath = 'data_manip_2.mat';
         
         cutoff = 0;
         startOfExp = 5;
@@ -136,7 +136,7 @@ switch experiment
         xlabel('% Accuracy'); ylabel('# of Subjects');
         %xlim([0.7 1]);
         box off; set(gcf,'Position',[200 200 800 300]);
-        subj = subj(pcorr>cutoff); 
+        subj = subj(pcorr>cutoff);
         
         % Convert csv file to data structure
         
@@ -203,26 +203,26 @@ switch experiment
         end
         
         data = rmfield(data, {'order'; 'chunk_order'});
-        %save(savepath, 'data');
+        save(savepath, 'data');
         
         
-%% 
+        %%
     case 'modified_freq_discr'
-%%
+        %%
         addpath('/Users/lucy/Google Drive/Harvard/Projects/chunking');
         folder = 'experiment_manip/data/';
         
         % study 315509, released on August 26, with modified frequency discrimination
         subj1 = {'A3RLCGRXA34GC0', 'A1KS9LITOVPAT8', 'AWAHIWLMQ0HUQ', 'A1IFIK8J49WBER', 'A38OPVI04AH4JG',...
-                'A1SMVF4MXT0RIH', 'A2M183CETUMR96', 'A1S9I3WF8GG4RG', 'A2OVX9UW5WANQE', 'AIHUIAQ4922K3'};
+            'A1SMVF4MXT0RIH', 'A2M183CETUMR96', 'A1S9I3WF8GG4RG', 'A2OVX9UW5WANQE', 'AIHUIAQ4922K3'};
         
         % study 316537, released on Sept 1
         subj2 = {'A3774HPOUKYTX7','A3LL096CAY5WHB','A39VZ93N96XB6O','A19CB2C4GY4C60','AAF1SJ9FCBF75'};
         
         % study 316537, released on Sept 6
         subj3 = {'A1969Q0R4Y0E3J','A222R4PNCF08OF','A2QX3YJXAAHHVV','A5TWD5QD99GZY','AI5RMOS8R652G'};
-
-        subj = [subj2 subj3];
+        
+        subj = [subj1 subj2 subj3];
         nTrials = 480;
         
         cutoff = 0;
@@ -235,10 +235,12 @@ switch experiment
             % 7.view_history  8.stimulus  9.key_pressed  10.state  11.test_part
             % 12.correct_response  13.order_block  14.order_chunk  15.order_freq
             % 16. correct
-             
+            
             A = readtable(strcat(folder, subj{s}));
             A = table2cell(A);
-            A = A(:,[1:6,10:end]);
+            if s>10
+                A = A(:,[1:6,10:end]);
+            end
             
             corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
             incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
@@ -250,14 +252,17 @@ switch experiment
         xlabel('% Accuracy'); ylabel('# of Subjects');
         %xlim([0.7 1]);
         box off; set(gcf,'Position',[200 200 800 300]);
-        subj = subj(pcorr>cutoff); 
+        subj = subj(pcorr>cutoff);
         
         % Convert csv file to data structure
         
         for s = 1:length(subj)
             A = readtable(strcat(folder, subj{s}));
             A = table2cell(A);
-            A = A(:,[1:6,10:end]);
+            if s>10
+                A = A(:,[1:6,10:end]);
+            end
+            
             corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
             incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
             data(s).performance = corr/(corr+incorr);

@@ -1,11 +1,11 @@
 function analysis_manip(data)
 
 prettyplot;
-if nargin<1; load('data_manip_3.mat'); end
+if nargin<1; load('data_manip_2.mat'); end
 nSubj = length(data);
 threshold = 0.4;   % lowest accuracy in each block
 condition = {'random', 'structured_normal', 'structured_load', 'structured_incentive'};
-Xlabel =     {'Random', 'Structured Baseline', 'Structured Load', 'Structured Incentive'};
+Xlabel =     {'Random', 'Baseline', 'Load', 'Incentive'};
 bmap = [190 190 190
     0 0 0
     70 130 180
@@ -145,20 +145,19 @@ for i = 1:3  % nonchunk RTs / non-chunk RTs
 end
 
 subplot 235; hold on;
-b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
-for i = 1:3
-    b(i).CData(1,:) = bmap(i+1,:);
-    b(i).CData(2,:) = bmap(i+1,:);
-end
-box off; ylim([0 1.2]);
-ylabel('Normalized RT (ms)'); box off;
-set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
-legend('Baseline', 'Load manipulation', 'Incentive manipulation', 'location', 'northeast');
-legend('boxoff');
-errorbar_pos = errorbarPosition(b, sem);
-errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+% b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
+% for i = 1:3
+%     b(i).CData(1,:) = bmap(i+1,:);
+%     b(i).CData(2,:) = bmap(i+1,:);
+% end
+% box off; ylim([0 1.2]);
+% ylabel('Normalized RT (ms)'); box off;
+% set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
+% legend('Baseline', 'Load manipulation', 'Incentive manipulation', 'location', 'northeast');
+% legend('boxoff');
+% errorbar_pos = errorbarPosition(b, sem);
+% errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 
-subplot 236; hold on;
 tmp = nanmean(avgRT,3); 
 h = bar(tmp(2,:), 0.7, 'FaceColor', 'flat');
 set(gca, 'XTick',1:3, 'XTickLabel', {'Baseline', 'Load', 'Incentive'});
@@ -166,7 +165,7 @@ for i = 1:length(conds)
     h.CData(i,:) = bmap(i+1,:);
 end
 errorbar(1:3, tmp(2,:), sem(2,:), sem(2,:), 'k','linestyle','none', 'lineWidth', 1.2);
-ylim([0 1.05]);
+%ylim([0 1.05]);
 xlabel('Block'); ylabel('Normalized ICRT');
 
 
@@ -230,7 +229,6 @@ xlabel('Block'); ylabel('Normalized ICRT');
 % ylim([0 1.05]);
 % xlabel('Block'); ylabel('Normalized ICRT');
 
-set(gcf, 'Position',  [0, 0, 1800, 1000])
 
 %% Policy-complexity in different blocks
 
@@ -239,7 +237,7 @@ maxReward = [120 120 120 120];
 [reward, complexity] = calculateRPC(data, condition, recode, maxReward);
 sem = nanstd(complexity,1)/sqrt(nSubj);
 
-figure; hold on;
+subplot 236; hold on;
 X = 1:length(condition);
 b = bar(X, mean(complexity,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -250,21 +248,46 @@ set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Average Policy Complexity');
 
 
+set(gcf, 'Position',  [0, 0, 1800, 1000])
+
 %% Reward-complexity curve
 plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_incentive_manip');
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
-plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 
+
+%% Test whether reward capacity changed from 0 and whether complexity changed from 
+plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
+plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
+[h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
+% h = 0 means it is centered around 0
+
+%Scaled JZS Bayes Factor = 3.150472
+%Scaled-Information Bayes Factor = 2.382151
+
+figure; hold on;
+b = bar([1 2], mean(complexity(:,[2,3]),1), 0.7, 'FaceColor', 'flat'); % load and baseline only, connect two
+errorbar([1 2], mean(complexity(:,[2,3]),1), sem(2:3), sem(2:3), 'k','linestyle','none', 'lineWidth', 1.2);
+b.CData(1,:) = bmap(2,:); b.CData(2,:) = bmap(3,:);
+plot(repmat([1;2],1,length(complexity(:,[2,3])')), complexity(:,[2,3])','--','Color',[0.75 0.75 0.75])
+ylabel('Policy Complexity'); 
+set(gca, 'XTick',[1 2], 'XTickLabel', {Xlabel{2} Xlabel{3}});
+xlabel('Block')
+for i = 2:3
+    scatter(repmat(i-1,1,length(complexity(:,i'))),complexity(:,i)',100,bmap(i,:),'filled','MarkerEdgeColor',[1 1 1],'LineWidth',1.5,'MarkerFaceAlpha',0.75','jitter','on','jitterAmount',0.05); hold on;
+end
+
+[h,p,ci,stats] = ttest(complexity(:,3)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
+% h = 1 means its different than 0!
 
 %% Statistical tests
 % on average accuracy
-[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left')
-[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left')
-[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left')
+[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left');
+[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left');
+[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left');
 
 % on policy complexity
-[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right')
-[h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right')
-[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left')
-[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left')
+[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right');
+[h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right') %  p=0.11
+[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left');
+[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left');
 end

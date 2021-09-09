@@ -3,7 +3,7 @@ var instructions = {
   pages: [
     // Welcome (page 1)
     '<p class="center-content">Welcome to the experiment!</p>' +
-    '<p class="center-content">You will earn $4 plus a performance-dependent bonus of $0-8 for completing this HIT.</p>' +
+    '<p class="center-content">You will earn $4 plus a performance-dependent bonus of $0-9 (including a survey) for completing this HIT.</p>' +
     '<p class="center-content">Press "Next" to view the instructions.</p>',
 
     // Instructions (page 2)

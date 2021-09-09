@@ -92,7 +92,7 @@ for setId = 1:length(cond)
             Q(s,a) = Q(s,a) + agent.lrate_V*(beta*r-cost-Q(s,a));
             V(s) = V(s) + agent.lrate_V*rpe;  
             p = p + agent.lrate_p*(policy - p); p = p./sum(p);
-            if a==chunk(1) % if indiv state is selected and is also CIS, then chunk also gets updated
+            if a==chunk(1)
                 theta(s,nA) = theta(s,nA) + agent.lrate_theta*g;
                 Q(s,nA) = Q(s,nA) + agent.lrate_V*(beta*r-cost-Q(s,a));
             end

@@ -1,4 +1,15 @@
 function simdata = sim_incentive_manip(incentives, setsize)
+
+% wrapper function for simulating the incentive manipulation with model
+% fitted parameters
+
+% INPUT: example - sim_incentive_manip(incentives, setsize)
+% if your chunk is [2,1], then incentives are on state 1 x5
+%        incentives = [5 0 0 0 0;
+%                      0 1 0 0 1; 
+%                      0 0 1 0 0;
+%                      0 0 0 1 0]
+
 addpath([pwd '/matlab_data/']);
 load('actionChunk_data.mat');
 load('fixed_adaptive_chunk.mat');

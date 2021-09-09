@@ -1,10 +1,7 @@
-function analysis_manip()
+function analysis_manip(data)
 
 prettyplot;
-<<<<<<< HEAD:analysis_manip.asv
-=======
 if nargin<1; load('data_manip_3.mat'); end
->>>>>>> 5a67257ff5db5353f930429083b61366316de45c:analysis_manip.m
 nSubj = length(data);
 threshold = 0.4;   % lowest accuracy in each block
 condition = {'random', 'structured_normal', 'structured_load', 'structured_incentive'};
@@ -83,11 +80,11 @@ sem = nanstd(rt,1) / sqrt(nSubj);
 
 subplot 233; hold on;
 X = 1:length(condition);
-b = bar(X, nanmean(rt,1), 0.7, 'FaceColor', 'flat');
+b = bar(X, mean(rt,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
     b.CData(i,:) = bmap(i,:);
 end
-errorbar(X, nanmean(rt,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar(X, mean(rt,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Average RT (ms)');
 
@@ -140,38 +137,13 @@ for s = 1:nSubj
     end
 end
 
-<<<<<<< HEAD:analysis_manip.asv
-for i = 1:3
-    avgAll = nanmean(avgRT(:,i,:), 1);
-    avgRT(:,i,:) = avgRT(:,i,:) ./ avgAll;
-    sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);
-=======
 for i = 1:3  % nonchunk RTs / non-chunk RTs
     avgRT(2,i,:) = squeeze(avgRT(2,i,:)) ./ squeeze(avgRT(1,i,:)); % ICRTs  / nonchunk RTs (<1 means more chunking)
     avgRT(1,i,:) = squeeze(avgRT(1,i,:)) ./ squeeze(avgRT(1,i,:)); % nonchunk RTs / nonchunk RTs
->>>>>>> 5a67257ff5db5353f930429083b61366316de45c:analysis_manip.m
     sem(1,i) = nanstd(squeeze(avgRT(1,i,:))) / sqrt(nSubj);
     sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);
 end
 
-<<<<<<< HEAD:analysis_manip.asv
-figure;
-b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
-hold on;
-for i = 1:3
-    b(i).CData(1,:) = bmap(i+1,:);
-    b(i).CData(2,:) = bmap(i+1,:);
-end
-box off; ylim([0 1.2]);
-ylabel('Normalized RT (ms)'); box off;
-set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
-legend('Baseline', 'Load manipulation', 'Incentive manipulation', 'location', 'northeast');
-legend('boxoff')
-errorbar_pos = errorbarPosition(b, sem);
-errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-
-figure; hold on;
-=======
 subplot 235; hold on;
 % b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
 % for i = 1:3
@@ -186,7 +158,6 @@ subplot 235; hold on;
 % errorbar_pos = errorbarPosition(b, sem);
 % errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 
->>>>>>> 5a67257ff5db5353f930429083b61366316de45c:analysis_manip.m
 tmp = nanmean(avgRT,3); 
 h = bar(tmp(2,:), 0.7, 'FaceColor', 'flat');
 set(gca, 'XTick',1:3, 'XTickLabel', {'Baseline', 'Load', 'Incentive'});
@@ -284,7 +255,7 @@ plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
 
-%% Test whether policy capacity changed from 0 in reward and whether complexity changed from 
+%% Test whether reward capacity changed from 0 and whether complexity changed from 
 plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
 plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 [h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
@@ -295,11 +266,11 @@ plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 
 figure; hold on;
 b = bar([1 2], mean(complexity(:,[2,3]),1), 0.7, 'FaceColor', 'flat'); % load and baseline only, connect two
-errorbar([1 2], mean(complexity(:,[2,3]),1), sem(2:3), sem(2:3), 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar(X, mean(complexity(:,[2,3]),1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 b.CData(1,:) = bmap(2,:); b.CData(2,:) = bmap(3,:);
 plot(repmat([1;2],1,length(complexity(:,[2,3])')), complexity(:,[2,3])','--','Color',[0.75 0.75 0.75])
 ylabel('Policy Complexity'); 
-set(gca, 'XTick',[1 2], 'XTickLabel', {Xlabel{2} Xlabel{3}});
+set(gca, 'XTick',X(2:3), 'XTickLabel', [Xlabel{2} Xlabel{3}]);
 xlabel('Block')
 for i = 2:3
     scatter(repmat(i-1,1,length(complexity(:,i'))),complexity(:,i)',100,bmap(i,:),'filled','MarkerEdgeColor',[1 1 1],'LineWidth',1.5,'MarkerFaceAlpha',0.75','jitter','on','jitterAmount',0.05); hold on;
@@ -310,13 +281,13 @@ end
 
 %% Statistical tests
 % on average accuracy
-[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left');
-[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left');
-[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left');
+[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left')
+[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left')
+[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left')
 
 % on policy complexity
-[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right');
-[h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right') %  p=0.11
-[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left');
-[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left');
+[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right')
+[h,p] = ttest2(complexity(:,2), complexity(:,3)-0.05, 'tail', 'right') %  p=0.11
+[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left')
+[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left')
 end

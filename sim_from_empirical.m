@@ -26,7 +26,7 @@ for s = 1:length(data)
         agent.lrate_p = 0;
         agent.lrate_beta = 0;
         agent.lrate_e = 0.1;
-    elseif agent.m == 4
+    elseif agent.m == 4 % fixed chunk (fixe
         agent.C = [];
         agent.lrate_beta = 0;
         agent.lrate_e = 0.1;

@@ -1,5 +1,7 @@
 function simdata = sim_rc_tradeoff()
 rng(0);
+% simlation for load and incentive
+
 load('data_manip_2.mat');
 
 C = rand(1,length(data));

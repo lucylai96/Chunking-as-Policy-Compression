@@ -29,7 +29,7 @@ acc = acc(idx,:);
 sem = nanstd(acc,1) / sqrt(nSubj);
 
 figure; hold on;
-subplot 231; hold on;
+subplot 221; hold on;
 X = 1:length(condition);
 b = bar(X, mean(acc,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -44,29 +44,6 @@ xlabel('Block'); ylabel('Average accuracy');
 data = data(idx);
 nSubj = length(data);
 
-
-%% Average Reward
-
-reward = nan(nSubj, length(condition));
-for s = 1:nSubj
-    for c = 1:length(condition)
-        reward(s,c) = sum(data(s).r(strcmp(data(s).cond, condition{c})));
-    end
-    reward(s,:) = reward(s,:) ./ [120 120 120 120];
-end
-sem = nanstd(reward,1) / sqrt(nSubj);
-
-subplot 232; hold on;
-X = 1:length(condition);
-b = bar(X, mean(reward,1), 0.7, 'FaceColor', 'flat');
-for i = 1:length(condition)
-    b.CData(i,:) = bmap(i,:);
-end
-ylim([0 2]);
-errorbar(X, mean(reward,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-set(gca, 'XTick',X, 'XTickLabel', Xlabel);
-xlabel('Block'); ylabel('Average reward');
-
 %% Average RT
 
 rt = nan(nSubj, length(condition));
@@ -78,7 +55,7 @@ for s = 1:nSubj
 end
 sem = nanstd(rt,1) / sqrt(nSubj);
 
-subplot 233; hold on;
+subplot 222; hold on;
 X = 1:length(condition);
 b = bar(X, mean(rt,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -108,7 +85,7 @@ for s = 1:nSubj
 end
 sem = nanstd(rtChunk,1) / sqrt(nSubj);
 
-subplot 234; hold on;
+subplot 223; hold on;
 X = 1:length(condition);
 b = bar(X, nanmean(rtChunk,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -144,20 +121,7 @@ for i = 1:3  % nonchunk RTs / non-chunk RTs
     sem(2,i) = nanstd(squeeze(avgRT(2,i,:))) / sqrt(nSubj);
 end
 
-subplot 235; hold on;
-% b = bar(nanmean(avgRT,3), 'FaceColor', 'flat');
-% for i = 1:3
-%     b(i).CData(1,:) = bmap(i+1,:);
-%     b(i).CData(2,:) = bmap(i+1,:);
-% end
-% box off; ylim([0 1.2]);
-% ylabel('Normalized RT (ms)'); box off;
-% set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
-% legend('Baseline', 'Load manipulation', 'Incentive manipulation', 'location', 'northeast');
-% legend('boxoff');
-% errorbar_pos = errorbarPosition(b, sem);
-% errorbar(errorbar_pos', nanmean(avgRT,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-
+subplot 224; hold on;
 tmp = nanmean(avgRT,3); 
 h = bar(tmp(2,:), 0.7, 'FaceColor', 'flat');
 set(gca, 'XTick',1:3, 'XTickLabel', {'Baseline', 'Load', 'Incentive'});
@@ -167,67 +131,30 @@ end
 errorbar(1:3, tmp(2,:), sem(2,:), sem(2,:), 'k','linestyle','none', 'lineWidth', 1.2);
 %ylim([0 1.05]);
 xlabel('Block'); ylabel('Normalized ICRT');
+set(gcf, 'Position',  [0, 0, 1000, 1000])
 
 
-%% Inchunk RT VS exochunk RT--compared within structured blocks
+%% Average Reward
 
-% conds = {'structured_normal', 'structured_load', 'structured_incentive'};
-% avgRT = zeros(2, length(conds), nSubj);
-% sem = zeros(2, length(conds));
-% for s = 1:nSubj
-%     for c = 1:length(conds)
-%         idx = strcmp(data(s).cond, conds{c});
-%         rt = data(s).rt(idx);
-%         state = data(s).s(idx);
-%         action = data(s).a(idx);
-%         chunk = data(s).chunk.(conds{c});
-%         idx = state==chunk(2) & action==chunk(2);                     % identify (correct) intrachunk states
-%         avgRT(1,c,s) = nanmean(rt(idx));                              % avg intrachunk RT
-%         avgRT(2,c,s) = nanmean(rt(state~=chunk(2) & state==action));  % identify non-chunk correct answers
-%     end
-% end
-% 
-% % need to do within subject not across subject
-% % before: avgRT(2,i,:) / nanmean(avgRT(1,c,:),3);
-% % after: nanmean(avgRT(2,i,:) / avgRT(1,c,:)),3);
-% for c = 1:length(conds)
-%     avgRT1(2,c,:) =  avgRT(2,c,:) / nanmean(avgRT(1,c,:),3);
-%     avgRT1(1,c,:) = avgRT(1,c,:) / nanmean(avgRT(1,c,:),3);
-%     sem(2,c) = nanstd(squeeze(avgRT1(2,c,:))) / sqrt(nSubj);
-%     sem(1,c) = nanstd(squeeze(avgRT1(1,c,:))) / sqrt(nSubj);
-% end
-% 
-% subplot 235; hold on;
-% b = bar(nanmean(avgRT1,3), 'FaceColor', 'flat');
-% hold on;
-% for i = 1:3
-%     b(i).CData(1,:) = bmap(i+1,:);
-%     b(i).CData(2,:) = bmap(i+1,:);
-% end
-% box off; ylim([0 1.2]);
-% ylabel('Normalized RT (ms)');
-% set(gca, 'XTick',1:2, 'XTickLabel', {'Other states', 'IntraChunk state'});
-% legend('Baseline', 'Load manipulation', 'Incentive manipulation');
-% errorbar_pos = errorbarPosition(b, sem);
-% errorbar(errorbar_pos', nanmean(avgRT1,3), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-% 
-% subplot 236; hold on;
-% 
-% % ICRTs divided by avg RTs per subject, <1 means ICRTs shorter than RTs
-% for c = 1:length(conds)
-%     avgRT2(c) = nanmean(avgRT(1,c,:)./avgRT(2,c,:),3);
-%     sem2(c) = nanstd(squeeze(avgRT(1,c,:)./avgRT(2,c,:))) / sqrt(nSubj);
-% end
-% 
-% h = bar(avgRT2, 0.7, 'FaceColor', 'flat');
-% set(gca, 'XTick',1:3, 'XTickLabel', {'Baseline', 'Load', 'Incentive'});
-% for i = 1:length(conds)
-%     h.CData(i,:) = bmap(i+1,:);
-% end
-% errorbar(1:3, avgRT2', sem2, sem2, 'k','linestyle','none', 'lineWidth', 1.2);
-% 
-% ylim([0 1.05]);
-% xlabel('Block'); ylabel('Normalized ICRT');
+reward = nan(nSubj, length(condition));
+for s = 1:nSubj
+    for c = 1:length(condition)
+        reward(s,c) = sum(data(s).r(strcmp(data(s).cond, condition{c})));
+    end
+    reward(s,:) = reward(s,:) ./ [120 120 120 120];
+end
+sem = nanstd(reward,1) / sqrt(nSubj);
+
+subplot 121; hold on;
+X = 1:length(condition);
+b = bar(X, mean(reward,1), 0.7, 'FaceColor', 'flat');
+for i = 1:length(condition)
+    b.CData(i,:) = bmap(i,:);
+end
+ylim([0 2]);
+errorbar(X, mean(reward,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+set(gca, 'XTick',X, 'XTickLabel', Xlabel);
+xlabel('Block'); ylabel('Average reward');
 
 
 %% Policy-complexity in different blocks
@@ -237,7 +164,7 @@ maxReward = [120 120 120 120];
 [reward, complexity] = calculateRPC(data, condition, recode, maxReward);
 sem = nanstd(complexity,1)/sqrt(nSubj);
 
-subplot 236; hold on;
+subplot 122; hold on;
 X = 1:length(condition);
 b = bar(X, mean(complexity,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -245,26 +172,29 @@ for i = 1:length(condition)
 end
 errorbar(X, mean(complexity,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
-xlabel('Block'); ylabel('Average Policy Complexity');
+xlabel('Block'); ylabel('Policy Complexity');
 
+set(gcf, 'Position',  [100, 100, 1200, 500])
 
-set(gcf, 'Position',  [0, 0, 1800, 1000])
 
 %% Reward-complexity curve
+figure; hold on;
+subplot 141; hold on;
 plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_incentive_manip');
+subplot 142; hold on;
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
-
 %% Test whether policy capacity changed from 0 in reward and whether complexity changed from 
+subplot 143; hold on;
 plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
 plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 [h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
 % h = 0 means it is centered around 0
 
-%Scaled JZS Bayes Factor = 3.150472
-%Scaled-Information Bayes Factor = 2.382151
+%Scaled JZS Bayes Factor =
+%Scaled-Information Bayes Factor = 
 
-figure; hold on;
+subplot 144; hold on;
 b = bar([1 2], mean(complexity(:,[2,3]),1), 0.7, 'FaceColor', 'flat'); % load and baseline only, connect two
 errorbar([1 2], mean(complexity(:,[2,3]),1), sem(2:3), sem(2:3), 'k','linestyle','none', 'lineWidth', 1.2);
 b.CData(1,:) = bmap(2,:); b.CData(2,:) = bmap(3,:);
@@ -275,9 +205,13 @@ xlabel('Block')
 for i = 2:3
     scatter(repmat(i-1,1,length(complexity(:,i'))),complexity(:,i)',100,bmap(i,:),'filled','MarkerEdgeColor',[1 1 1],'LineWidth',1.5,'MarkerFaceAlpha',0.75','jitter','on','jitterAmount',0.05); hold on;
 end
+set(gcf, 'Position',  [100, 100, 2000, 500])
 
 [h,p,ci,stats] = ttest(complexity(:,3)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
 % h = 1 means its different than 0!
+
+%% Hick's Law (policy complexity scales 
+
 
 %% Statistical tests
 % on average accuracy

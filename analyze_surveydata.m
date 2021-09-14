@@ -1,7 +1,7 @@
 function analyze_surveydata
 
 folder = 'survey_data/';
-A = readtable(strcat(folder, 'pilot4'));
+A = readtable(strcat(folder, 'pilot'));
 subj = table2cell(A(2:end,148))'; % get mturkIDs
 A = table2array(A(2:end,27:146)); % only the data
 if ~isempty(isnan(A))
@@ -9,7 +9,7 @@ if ~isempty(isnan(A))
     r = unique(r);
     A(r,:) = []; 
     disp('subjects who didn`t do survey:')
-    size(r)
+    length(r)
 end
 % question table of contents
 % SCZ: 1-43

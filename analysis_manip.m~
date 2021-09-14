@@ -29,7 +29,7 @@ acc = acc(idx,:);
 sem = nanstd(acc,1) / sqrt(nSubj);
 
 figure; hold on;
-subplot 231; hold on;
+subplot 221; hold on;
 X = 1:length(condition);
 b = bar(X, mean(acc,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -44,29 +44,6 @@ xlabel('Block'); ylabel('Average accuracy');
 data = data(idx);
 nSubj = length(data);
 
-
-%% Average Reward
-
-reward = nan(nSubj, length(condition));
-for s = 1:nSubj
-    for c = 1:length(condition)
-        reward(s,c) = sum(data(s).r(strcmp(data(s).cond, condition{c})));
-    end
-    reward(s,:) = reward(s,:) ./ [120 120 120 120];
-end
-sem = nanstd(reward,1) / sqrt(nSubj);
-
-subplot 232; hold on;
-X = 1:length(condition);
-b = bar(X, mean(reward,1), 0.7, 'FaceColor', 'flat');
-for i = 1:length(condition)
-    b.CData(i,:) = bmap(i,:);
-end
-ylim([0 2]);
-errorbar(X, mean(reward,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
-set(gca, 'XTick',X, 'XTickLabel', Xlabel);
-xlabel('Block'); ylabel('Average reward');
-
 %% Average RT
 
 rt = nan(nSubj, length(condition));
@@ -78,7 +55,7 @@ for s = 1:nSubj
 end
 sem = nanstd(rt,1) / sqrt(nSubj);
 
-subplot 233; hold on;
+subplot 222; hold on;
 X = 1:length(condition);
 b = bar(X, mean(rt,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -108,7 +85,7 @@ for s = 1:nSubj
 end
 sem = nanstd(rtChunk,1) / sqrt(nSubj);
 
-subplot 234; hold on;
+subplot 223; hold on;
 X = 1:length(condition);
 b = bar(X, nanmean(rtChunk,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -229,6 +206,30 @@ xlabel('Block'); ylabel('Normalized ICRT');
 % ylim([0 1.05]);
 % xlabel('Block'); ylabel('Normalized ICRT');
 
+figure; hold on;
+
+%% Average Reward
+
+reward = nan(nSubj, length(condition));
+for s = 1:nSubj
+    for c = 1:length(condition)
+        reward(s,c) = sum(data(s).r(strcmp(data(s).cond, condition{c})));
+    end
+    reward(s,:) = reward(s,:) ./ [120 120 120 120];
+end
+sem = nanstd(reward,1) / sqrt(nSubj);
+
+subplot 121; hold on;
+X = 1:length(condition);
+b = bar(X, mean(reward,1), 0.7, 'FaceColor', 'flat');
+for i = 1:length(condition)
+    b.CData(i,:) = bmap(i,:);
+end
+ylim([0 2]);
+errorbar(X, mean(reward,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+set(gca, 'XTick',X, 'XTickLabel', Xlabel);
+xlabel('Block'); ylabel('Average reward');
+
 
 %% Policy-complexity in different blocks
 
@@ -237,7 +238,7 @@ maxReward = [120 120 120 120];
 [reward, complexity] = calculateRPC(data, condition, recode, maxReward);
 sem = nanstd(complexity,1)/sqrt(nSubj);
 
-subplot 236; hold on;
+subplot 122; hold on;
 X = 1:length(condition);
 b = bar(X, mean(complexity,1), 0.7, 'FaceColor', 'flat');
 for i = 1:length(condition)
@@ -255,7 +256,7 @@ plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
 
-%% Test whether reward capacity changed from 0 and whether complexity changed from 
+%% Test whether policy capacity changed from 0 in reward and whether complexity changed from 
 plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
 plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 [h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
@@ -266,11 +267,11 @@ plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 
 figure; hold on;
 b = bar([1 2], mean(complexity(:,[2,3]),1), 0.7, 'FaceColor', 'flat'); % load and baseline only, connect two
-errorbar(X, mean(complexity(:,[2,3]),1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
+errorbar([1 2], mean(complexity(:,[2,3]),1), sem(2:3), sem(2:3), 'k','linestyle','none', 'lineWidth', 1.2);
 b.CData(1,:) = bmap(2,:); b.CData(2,:) = bmap(3,:);
 plot(repmat([1;2],1,length(complexity(:,[2,3])')), complexity(:,[2,3])','--','Color',[0.75 0.75 0.75])
 ylabel('Policy Complexity'); 
-set(gca, 'XTick',X(2:3), 'XTickLabel', [Xlabel{2} Xlabel{3}]);
+set(gca, 'XTick',[1 2], 'XTickLabel', {Xlabel{2} Xlabel{3}});
 xlabel('Block')
 for i = 2:3
     scatter(repmat(i-1,1,length(complexity(:,i'))),complexity(:,i)',100,bmap(i,:),'filled','MarkerEdgeColor',[1 1 1],'LineWidth',1.5,'MarkerFaceAlpha',0.75','jitter','on','jitterAmount',0.05); hold on;
@@ -281,13 +282,13 @@ end
 
 %% Statistical tests
 % on average accuracy
-[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left')
-[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left')
-[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left')
+[h,p] = ttest2(acc(:,1), acc(:,2), 'tail', 'left');
+[h,p] = ttest2(acc(:,3), acc(:,2), 'tail', 'left');
+[h,p] = ttest2(acc(:,3), acc(:,4), 'tail', 'left');
 
 % on policy complexity
-[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right')
-[h,p] = ttest2(complexity(:,2), complexity(:,3)-0.05, 'tail', 'right') %  p=0.11
-[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left')
-[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left')
+[h,p] = ttest2(complexity(:,1), complexity(:,2), 'tail', 'right');
+[h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right') %  p=0.11
+[h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left');
+[h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left');
 end

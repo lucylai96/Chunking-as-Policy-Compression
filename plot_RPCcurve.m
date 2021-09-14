@@ -21,7 +21,7 @@ if nargin==4 || strcmp(experiment, 'setsize')
     if isequal(entrySet, [1 2]) || isequal(entrySet, [5 6]); color = bmap(1:2,:); end
     if isequal(entrySet, [3 4]) || isequal(entrySet, [7 8]); color = bmap(3:4,:); end
 
-    figure; hold on;
+    %figure; hold on;
     entry = entrySet(1);
     scatter(complexity(:,entry), reward(:,entry), 120, 'filled', 'MarkerFaceColor', color(entry,:));
     polycoef = polyfit(complexity(:,entry), reward(:,entry), 2);
@@ -53,7 +53,7 @@ elseif strcmp(experiment, 'load_incentive_manip')
     %if isequal(entrySet, [1 2]); color = bmap(1:2,:); end
     %if isequal(entrySet, [2 3 4]); color = bmap(2:4,:); end
     
-    figure; hold on;
+    %figure; hold on;
     plots = [];
     for i = 1:length(entrySet)
         entry = entrySet(i);

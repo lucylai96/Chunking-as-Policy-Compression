@@ -64,7 +64,7 @@ end
 errorbar(X, mean(rt,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1.2);
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Average RT (ms)');
-
+allRT = rt;
 
 %% Intrachunk RT
 
@@ -178,14 +178,14 @@ set(gcf, 'Position',  [100, 100, 1200, 500])
 
 
 %% Reward-complexity curve
-figure; hold on;
-subplot 141; hold on;
+%figure; hold on;
+%subplot 141; hold on;
 plot_RPCcurve(reward, complexity, [1 2], {'Random', 'Structured,Normal'}, 'load_incentive_manip');
-subplot 142; hold on;
+%subplot 142; hold on;
 plot_RPCcurve(reward, complexity, [2 3 4], {'Baseline', 'Load manipulation', 'Incentive manipulation'}, 'load_incentive_manip');
 
 %% Test whether policy capacity changed from 0 in reward and whether complexity changed from 
-subplot 143; hold on;
+%subplot 143; hold on;
 plot_RPCcurve(reward, complexity, [2 4], {'Baseline', 'Incentive manipulation'}, 'load_incentive_manip');
 plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 [h,p,ci,stats] = ttest(complexity(:,4)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
@@ -194,7 +194,7 @@ plot(complexity(:,[2,4])', reward(:,[2 4])','--','Color',[0.75 0.75 0.75])
 %Scaled JZS Bayes Factor =
 %Scaled-Information Bayes Factor = 
 
-subplot 144; hold on;
+figure; hold on;
 b = bar([1 2], mean(complexity(:,[2,3]),1), 0.7, 'FaceColor', 'flat'); % load and baseline only, connect two
 errorbar([1 2], mean(complexity(:,[2,3]),1), sem(2:3), sem(2:3), 'k','linestyle','none', 'lineWidth', 1.2);
 b.CData(1,:) = bmap(2,:); b.CData(2,:) = bmap(3,:);
@@ -205,12 +205,10 @@ xlabel('Block')
 for i = 2:3
     scatter(repmat(i-1,1,length(complexity(:,i'))),complexity(:,i)',100,bmap(i,:),'filled','MarkerEdgeColor',[1 1 1],'LineWidth',1.5,'MarkerFaceAlpha',0.75','jitter','on','jitterAmount',0.05); hold on;
 end
-set(gcf, 'Position',  [100, 100, 2000, 500])
+%set(gcf, 'Position',  [100, 100, 2000, 500])
 
 [h,p,ci,stats] = ttest(complexity(:,3)-complexity(:,2),0) % test the hypothesis that the difference in complexity come from a distribution with mean 0
 % h = 1 means its different than 0!
-
-%% Hick's Law (policy complexity scales 
 
 
 %% Statistical tests
@@ -224,4 +222,18 @@ set(gcf, 'Position',  [100, 100, 2000, 500])
 [h,p] = ttest2(complexity(:,2), complexity(:,3), 'tail', 'right') %  p=0.11
 [h,p] = ttest2(complexity(:,3), complexity(:,4), 'tail', 'left');
 [h,p] = ttest2(complexity(:,2), complexity(:,4), 'tail', 'left');
+
+
+%% Hick's Law (policy complexity scales with reaction time, should be true in first expt)
+figure; hold on;
+plot(complexity(:,1), allRT(:,1), '.','MarkerSize',30)
+xlabel('Policy Complexity')
+ylabel('Reaction Time (ms)')
+
+%% Psychometric data
+analyze_psycho(reward, complexity, data); %plots correlation between [policy complexity
+
+reward 
+complexity
+rt 
 end

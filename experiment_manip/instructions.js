@@ -89,21 +89,21 @@ function present_pictures(set_num){
 }
 
 
-function create_incentive_instructions(set_num, chunk, exoChunk){
+function create_incentive_instructions(set_num, chunk_rare, outChunk){
   var instructions = {
   type: 'instructions',
   pages: [
   '<p class="center-content">This block is associated with block-specific rules. </p>' + 
   '<p class="center-content"><b>In this block, correctly responding to the picture below will be 5 times more rewarding than to other pictures.</b> </p>' +
   '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:300px;"><tr>' +
-  '<td><img src="img/set' +set_num+ '/S' +chunk[1]+ '.jpg" style="width: 300px; height: 210px"></td>' +
+  '<td><img src="img/set' +set_num+ '/S' +chunk_rare[1]+ '.jpg" style="width: 300px; height: 210px"></td>' +
   '</tr><tr>' +
   '</tr></table>', 
 
   '<p class="center-content">A violet border will appear after you press the correct key for the chosen picture.</p>'+
   '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:650px;"><tr>' +
-  '<td><img src="img/set' +set_num+ '/S' +chunk[1]+ '.jpg" width="240" height="160" style="border:14px solid Violet"></td>' +
-  '<td><img src="img/set' +set_num+ '/S' +exoChunk[1]+ '.jpg" width="240" height="160" style="border:14px solid orange"></td>' +
+  '<td><img src="img/set' +set_num+ '/S' +chunk_rare[1]+ '.jpg" width="240" height="160" style="border:14px solid Violet"></td>' +
+  '<td><img src="img/set' +set_num+ '/S' +outChunk[0]+ '.jpg" width="240" height="160" style="border:14px solid orange"></td>' +
   '</tr><tr>' +
   '<td>Violet border-></td><td>Orange border-></td>' +
   '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:650px;"><tr>' +
@@ -127,7 +127,7 @@ function create_load_instructions(set_num, freq_order){
     '<p class="center-content">This block is associated with block-specific rules. </p>'+
     '<p class="center-content"><b>You will need to count the occurrences of the following two pictures during the task,</b>  </p>'+
     '<p class="center-content"><b>and indicate which picture has higher frequency after you finish this block. </p>' +
-    '<p class="center-content"><b>You will obtain a monetary bonus of $2 upon selecting the correct answer. </b> </p>' +  
+    '<p class="center-content"><b>You will obtain a monetary bonus of $2 for selecting the correct answer. </b> </p>' +  
     '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:600px;"><tr>' +
     '<td><img src="img/set' +set_num+ '/S' +freq_order[0]+ '.jpg" style="width: 250px; height: 170px"></td>' +
     '<td><img src="img/set' +set_num+ '/S' +freq_order[1]+ '.jpg" style="width: 250px; height: 170px"></td>' +

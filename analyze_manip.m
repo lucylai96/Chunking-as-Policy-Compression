@@ -117,7 +117,7 @@ set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Intrachunk RT (ms)');
 
 
-%% Inchunk RT VS exochunk RT--compared within structured blocks
+%% Inchunk RT VS extrachunk RT--compared within structured blocks
 
 conds = {'structured_normal', 'structured_load', 'structured_incentive'};
 avgRT = zeros(2, length(conds), nSubj);

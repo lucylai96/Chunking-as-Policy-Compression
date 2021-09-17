@@ -60,7 +60,7 @@ function create_occurence_feedback(freq_order, stateDist){
         '<p class="center-content">Please press any key to continue. </p>' ];
     }
     else{
-      return ['<p class="center-content">Underfortunately, the answer you selected was incorrect. </p>'+
+      return ['<p class="center-content">Underfortunately, the answer you selected was not correct. </p>'+
         '<p class="center-content">Please press any key to continue. </p>'];
     }
   },
@@ -93,7 +93,7 @@ function bonus_freq_discr(freq_order, stateDist){
 }
 
 
-function pushFeedback(num, block, chunk, timeline){
+function pushFeedback(num, block, chunk_rare, timeline){
     var feedback = {
     type: 'html-keyboard-response',
     stimulus: function(){
@@ -102,7 +102,7 @@ function pushFeedback(num, block, chunk, timeline){
       console.log(feedback_img);
       var feedback = prev_trial.select('key_press').values[0];
       if (prev_trial.select('correct').values[0]){
-        if (block=='structured_incentive' && num==chunk[1]){
+        if (block=='structured_incentive' && num==chunk_rare[1]){
           return '<img src="' + feedback_img + '" width="540" height = "360" style="border:16px solid Violet">';
         }
         else{
@@ -120,7 +120,7 @@ function pushFeedback(num, block, chunk, timeline){
 };
 
  // push trials
-function pushTrials(set, num, block, chunk, timeline){
+function pushTrials(set, num, block, chunk_rare, timeline){
   var trial = {
     type: 'image-keyboard-response',
     stimulus: eval('stimulus_set' + set + '[num-1].stimulus'),
@@ -132,69 +132,54 @@ function pushTrials(set, num, block, chunk, timeline){
       data.correct = data.key_press == data.correct_response;
       trial_node_id = jsPsych.currentTimelineNodeID();
       var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-      jsPsych.setProgressBar(curr_progress_bar_value + (1/480));
+      jsPsych.setProgressBar(curr_progress_bar_value + (1/560));
     }
   }
   timeline.push(trial);
-  pushFeedback(num, block, chunk, timeline);
+  pushFeedback(num, block, chunk_rare, timeline);
   timeline.push(fixation);
 };
 
 
-function pushBlocks(timeline, set, condition, chunk){
+function pushBlocks(timeline, set, condition, chunk_freq, chunk_rare){
   // i is the picture set to be used
   // condition tells us whether it is structured or random
-  // chunk tells us configuraiton of the chunk
+  // chunk tells us the structure of the chunk
   if (condition=='random'){
     var probs = [1, 1, 1, 1];
-    var mult = SJS.Multinomial(120, probs);
+    var mult = SJS.Multinomial(140, probs);
     var stateDist = mult.draw();
-    stateDist = stateDist.concat([0]);
+    stateDist = stateDist.concat([0, 0]);
   }
   else{
-    var probs = [1, 1];
-    var mult = SJS.Multinomial(60, probs);
-    var stateDist_tmp = mult.draw();
-    var stateDist = [0, 0, 0, 0, 30];
-    var idx = 0;
-    for (let i=0; i<stateDist.length-1; i++){
-      if (i != chunk[0]-1 && i != chunk[1]-1){
-        stateDist[i] = stateDist_tmp[idx];
-        idx = idx + 1;
-      }
-    }
+    var mult_primitive = SJS.Multinomial(140, [1, 1, 1, 1]);
+    var stateDist_primitive = mult_primitive.draw();
+    var mult_chunk_transition = SJS.Multinomial(35, [4, 1]);
+    var stateDist_chunk_transition = mult_chunk_transition.draw();
+    var stateDist = [35,35,35,35].concat(stateDist_chunk_transition);
+    stateDist[chunk_freq[0]-1] = 0;
+    stateDist[chunk_freq[1]-1] = 35 - stateDist_chunk_transition[0];
+    stateDist[chunk_rare[1]-1] = 35 - stateDist_chunk_transition[1];
   }
 
   console.log(condition + ":" + stateDist);
-  var randomizedTrials = jsPsych.randomization.repeat([1,2,3,4,7], stateDist);
+  var randomizedTrials = jsPsych.randomization.repeat([1,2,3,4,7,8], stateDist);
   for (let i=0; i<randomizedTrials.length; i++){
     num = randomizedTrials[i];
     if (num < 7){
-      pushTrials(set, num, condition, chunk, timeline);
+      pushTrials(set, num, condition, chunk_rare, timeline);
     }
-    else{
-      pushTrials(set, chunk[0], condition, chunk, timeline);
-      pushTrials(set, chunk[1], condition, chunk, timeline); 
+    else if (num == 7){
+      pushTrials(set, chunk_freq[0], condition, chunk_rare, timeline);
+      pushTrials(set, chunk_freq[1], condition, chunk_rare, timeline); 
+    }
+    else if (num == 8){
+      pushTrials(set, chunk_rare[0], condition, chunk_rare, timeline);
+      pushTrials(set, chunk_rare[1], condition, chunk_rare, timeline); 
     }
   }
-
   return stateDist;
 }
-
-
-function find_exoChunk(chunk){
-  if (chunk[0]==2 && chunk[1]==1){
-    var exoChunk = [3,4];
-  }
-  else if (chunk[0]==3 && chunk[1]==4){
-    var exoChunk = [1,2];
-  }
-  else if (chunk[0]==2 && chunk[1]==3){
-    var exoChunk = [1,4]
-  }
-  return exoChunk;
-}
-
 
 function shuffle(array) {
   for (var i = array.length - 1; i > 0; i--) {
@@ -204,6 +189,18 @@ function shuffle(array) {
     array[j] = temp;
   }
   return array;
+}
+
+function find_outChunk(chunk){
+  if (chunk[0]==2 && chunk[1]==4){
+    return [1,3]; 
+  }
+  else if (chunk[0]==1 && chunk[1]==4){
+    return [3,2];
+  }
+  else if (chunk[0]==4 && chunk[1]==3){
+    return [2,1];
+  }
 }
 
 
@@ -254,7 +251,7 @@ function create_bonus_page(freq_order, stateDist){
       var correct_bonus = Math.round(60 * jsPsych.data.get().filter({correct: true}).count() / 480); 
       correct_bonus = 0.1 * correct_bonus + bonus_freq_discr(freq_order, stateDist);
       jsPsych.data.addDataToLastTrial({"bonus": correct_bonus});
-      return ['<p class="center-content">You won a bonus of <b>$' + (correct_bonus == 1 ? '10.00' : correct_bonus) + '</b>.</p>' +
+      return ['<p class="center-content">You won a bonus of <b>$' + (correct_bonus == 1 ? '9.00' : correct_bonus) + '</b>.</p>' +
       '<p class="center-content"> IMPORTANT: <b>Press "Next"</b> to continue to the survey questions.</p>'];
     },
     show_clickable_nav: true,

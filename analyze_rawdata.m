@@ -192,7 +192,7 @@ switch experiment
             c = data(subj).chunk_order; c = c{1};
             for i = 1:3
                 chunk = zeros(1,2);
-                chunk(1) = str2num(c(2*i-1)); chunk(2) = str2num(c(2*i+1));
+                chunk(1) = str2num(c(2*(2*i-1)-1)); chunk(2) = str2num(c(2*(2*i-1)+1));
                 data(subj).chunk.(blocks{i}) = chunk;
             end
             
@@ -312,19 +312,133 @@ switch experiment
             c = data(subj).chunk_order; c = c{1};
             for i = 1:3
                 chunk = zeros(1,2);
-                chunk(1) = str2num(c(2*i-1)); chunk(2) = str2num(c(2*i+1));
-                data(subj).chunk.(blocks{i}) = chunk;
+                chunk(1) = str2num(c(2*(2*i-1)-1)); chunk(2) = str2num(c(2*(2*i-1)+1));
+                data(subj).chunk.(blocks{i}) = chunk;                       
             end
             
             % assign 5x reward for the intrachunk state in structured_incentive block
             idx = strcmp(data(subj).cond, 'structured_incentive'); % trials in structured_incentive block
-            idx = idx & data(subj).s == data(subj).chunk.structured_incentive(2); % trials that present the intrachunk state
+            idx = idx & data(subj).s == data(subj).chunk.structured_incentive(2); % trials that have the intrachunk state
             data(subj).r(idx) = data(subj).r(idx) * 5;
         end
         
         data = rmfield(data, {'order'; 'chunk_order'});
         savepath = 'data_manip_3.mat';
         save(savepath, 'data');
+
+
+    %%
+    case 'probabilistic_transition'
+        %%
+        addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion');
+        folder = 'experiment_manip/data/';
+
+        subj1 = {'A11Q8U6QTT8KGF', 'A1GKD3NNHRP', 'A2WWYVKGZZXBOB', 'A5WWHKD82I8UE', 'APGX2WZ59OWDN'};
+        subj2 = {'A1PBRKFHSF1OF8', 'A2B6WQG0A9CKXQ', 'A2KLJKDG90K1PP', 'A30RAYNDOWQ61S', 'AOWW3URQNRJ6U',...
+                 'AT6OT5K5Z4V0J', 'AV5FCKI1TTSKR', 'AXKTYKCT9NGHS', 'AZ9VWEDBI364C'}
+        subj = [subj1 subj2];
+        nTrials = 560;
         
+        cutoff = 0;
+        startOfExp = 5;
+        data.cutoff = cutoff;
+        pcorr = zeros(length(subj),1);
+        
+        for s = 1:length(subj)
+            % 1.rt  2.url  3.trial_type  4.trial_index  5.time_elapsed  % 6.internal_node_id
+            % 11.stimulus  12.keypres  13.state  14.test_part
+            % 15.correct_response  16.order_block  17.order_chunk
+            % 18.order_frequency_discr  19.correct  
+            
+            A = readtable(strcat(folder, subj{s}));
+            A = table2cell(A);
+            
+            corr = sum(strcmp(A(startOfExp:end, 19), 'true'));
+            incorr = sum(strcmp(A(startOfExp:end,19), 'false'));
+            pcorr(s) = corr/(corr+incorr);
+        end
+        
+        figure; hold on;
+        histogram(pcorr, 20, 'FaceColor', '#0072BD');
+        xlabel('% Accuracy'); ylabel('# of Subjects');
+        %xlim([0.7 1]);
+        box off; set(gcf,'Position',[200 200 800 300]);
+        subj = subj(pcorr>cutoff);
+        
+        % Convert csv file to data structure
+        
+        for s = 1:length(subj)
+            A = readtable(strcat(folder, subj{s}));
+            A = table2cell(A);
+            
+            corr = sum(strcmp(A(startOfExp:end, 19), 'true'));
+            incorr = sum(strcmp(A(startOfExp:end,19), 'false'));
+            data(s).performance = corr/(corr+incorr);
+            data(s).bonus = A{1696,22};
+            
+            A(:,19) = strrep(A(:,19), 'true', '1');
+            A(:,19) = strrep(A(:,19), 'false', '0');
+            
+            condition = unique(A(:,14));
+            condition(strcmp(condition, '')) = [];
+            expTrialIdx = ismember(A(:,14), condition);
+            A(strcmp(A, 'null'),12) = {'-1'};
+            data(s).ID = subj{s};
+            
+            data(s).cond = A(expTrialIdx, 14);
+            data(s).idx = A(expTrialIdx, 4);
+            data(s).s = cell2mat(A(expTrialIdx, 13));
+            data(s).a = str2num(cell2mat(A(expTrialIdx, 12)));
+            data(s).a(data(s).a==-49) = NaN;
+            data(s).corrchoice = cell2mat(A(expTrialIdx,15));
+            data(s).acc = str2num(cell2mat(A(expTrialIdx, 19)));
+            data(s).r = str2num(cell2mat(A(expTrialIdx, 19)));
+            data(s).rt = zeros(nTrials, 1);
+            idx = find(expTrialIdx);
+            for i=1:sum(expTrialIdx)
+                data(s).rt(i) = str2double(A{idx(i),1});
+            end
+            data(s).order = A(startOfExp, 16);
+            data(s).chunk_order = A(startOfExp, 17);
+            data(s).N = nTrials;
+        end
+        
+        
+        % Data Preprocessing
+        
+        for subj = 1:length(data)
+            % recode actions to [1,2,3,4]
+            action = [83, 68, 72, 74];
+            for i = 1:length(action)
+                idx = data(subj).a==action(i);
+                data(subj).a(idx) = i;
+            end
+            
+            % find the chunk structure associated with each structured block
+            blocks = split(data(subj).order, ',');
+            blocks(strcmp(blocks, 'random')) = [];
+            c = data(subj).chunk_order; c = c{1};
+            for i = 1:3
+                chunk = zeros(1,2);
+                chunk(1) = str2num(c(2*(2*i-1)-1)); chunk(2) = str2num(c(2*(2*i-1)+1));
+                data(subj).chunk.(blocks{i}) = chunk;                       
+            end
+            
+            % assign 5x reward the state following the ICS in the rare transitions
+            idx_incentive = strcmp(data(subj).cond, 'structured_incentive'); % trials in structured_incentive block
+            chunk_freq = data(subj).chunk.structured_incentive;
+            state = data(subj).s(idx_incentive);
+            CIS_idx = find(state == chunk_freq(1));
+            IC_idx = CIS_idx + 1;
+            ICS = unique(state(IC_idx));   % find the 2 possible states following the CIS
+            ICS_frequency = [sum(state(IC_idx)==ICS(1)) sum(state(IC_idx)==ICS(2))]; 
+            ICS_rare = ICS(ICS_frequency == min(ICS_frequency));        
+            idx_rare_ICS = data(subj).s == ICS_rare;
+            data(subj).r(idx_incentive & idx_rare_ICS) = data(subj).r(idx_incentive & idx_rare_ICS) * 5;
+        end
+        
+        data = rmfield(data, {'order'; 'chunk_order'});
+        %savepath = 'data_manip_3.mat';
+        %save(savepath, 'data');
 end
 end

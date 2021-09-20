@@ -30,7 +30,7 @@ switch experiment
         nTrials = 700;
         savepath = 'actionChunk_data.mat';
         
-        cutoff = 0.0;
+        cutoff = 0.4;
         startOfExp = 4;  %change
         data.cutoff = cutoff;
         pcorr = zeros(length(subj),1);
@@ -335,7 +335,7 @@ switch experiment
 
         subj1 = {'A11Q8U6QTT8KGF', 'A1GKD3NNHRP', 'A2WWYVKGZZXBOB', 'A5WWHKD82I8UE', 'APGX2WZ59OWDN'};
         subj2 = {'A1PBRKFHSF1OF8', 'A2B6WQG0A9CKXQ', 'A2KLJKDG90K1PP', 'A30RAYNDOWQ61S', 'AOWW3URQNRJ6U',...
-                 'AT6OT5K5Z4V0J', 'AV5FCKI1TTSKR', 'AXKTYKCT9NGHS', 'AZ9VWEDBI364C'}
+                 'AT6OT5K5Z4V0J', 'AV5FCKI1TTSKR', 'AXKTYKCT9NGHS', 'AZ9VWEDBI364C', 'A3LVLZS8S41ZD7'}
         subj = [subj1 subj2];
         nTrials = 560;
         

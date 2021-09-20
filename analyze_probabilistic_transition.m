@@ -29,8 +29,8 @@ for subj = 1:nSubj
         
         ICS_freq = ICS(ICS_frequency == max(ICS_frequency)); % the intrachunk state in the more frequent transition
         ICS_rare = ICS(ICS_frequency == min(ICS_frequency)); % the "intrachunk" state in the rare transition
-        IC_idx_freq = intersect(IC_idx, find(s==ICS_freq));
-        IC_idx_rare = intersect(IC_idx, find(s==ICS_rare));
+        IC_idx_freq = intersect(IC_idx, find(s==ICS_freq & s==a));
+        IC_idx_rare = intersect(IC_idx, find(s==ICS_rare & s==a));
         
         ICRT(subj,c,1) = nanmean(rt(IC_idx_freq));
         ICRT(subj,c,2) = nanmean(rt(IC_idx_rare));
@@ -44,8 +44,8 @@ end
         
 %% Plot ICRT & IC_accuracy
 % the ICRT
-sem_ICRT = squeeze(std(ICRT, 1) / sqrt(nSubj));     % size(sem_ICRT) = (3,2)
-mean_ICRT = squeeze(mean(ICRT, 1));
+sem_ICRT = squeeze(nanstd(ICRT, 1) / sqrt(nSubj));     % size(sem_ICRT) = (3,2)
+mean_ICRT = squeeze(nanmean(ICRT, 1));
 figure; 
 hold on;
 X = 1:length(struc_conds);

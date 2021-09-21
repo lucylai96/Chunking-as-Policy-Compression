@@ -19,7 +19,7 @@ function analyze_probabilistic_transition(data)
             70 130 180
             60 179 113]/255;
     
-%% Compare ICRT & IC_accuracy
+%% Compare ICRT & IC_accuracy for the correctly responded ICS
 
     ICRT = nan(nSubj, length(struc_conds), 2);  % ICRT(:,:,1) frequent transition; ICRT(:,:,2) rare transition
     IC_acc = nan(nSubj, length(struc_conds), 2);

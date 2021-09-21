@@ -340,7 +340,7 @@ function data = analyze_rawdata(experiment)
             subj1 = {'A11Q8U6QTT8KGF', 'A1GKD3NNHRP', 'A2WWYVKGZZXBOB', 'A5WWHKD82I8UE', 'APGX2WZ59OWDN'};
             subj2 = {'A1PBRKFHSF1OF8', 'A2B6WQG0A9CKXQ', 'A2KLJKDG90K1PP', 'A30RAYNDOWQ61S', 'AOWW3URQNRJ6U',...
                      'AT6OT5K5Z4V0J', 'AV5FCKI1TTSKR', 'AXKTYKCT9NGHS', 'AZ9VWEDBI364C', 'A3LVLZS8S41ZD7'};
-            subj = [subj1 subj2];
+            subj = [subj2];
             nTrials = 560;
 
             cutoff = 0;

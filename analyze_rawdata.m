@@ -212,6 +212,7 @@ function data = analyze_rawdata(experiment, cutoff)
             %%
         case 'modified_freq_discr'
             %%
+            % addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion');
             addpath('/Users/lucy/Google Drive/Harvard/Projects/chunking');
             folder = 'experiment_manip/data/';
 
@@ -332,13 +333,22 @@ function data = analyze_rawdata(experiment, cutoff)
         %%
         case 'probabilistic_transition'
             %%
-            addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion');
+            %addpath('/Users/ann/Desktop/CCN_Lab/BehavioralExperiment/Ns6_FinalVersion');
+            addpath('/Users/lucy/Google Drive/Harvard/Projects/chunking');
             folder = 'experiment_manip/data/';
 
             subj1 = {'A11Q8U6QTT8KGF', 'A1GKD3NNHRP', 'A2WWYVKGZZXBOB', 'A5WWHKD82I8UE', 'APGX2WZ59OWDN'};
             subj2 = {'A1PBRKFHSF1OF8', 'A2B6WQG0A9CKXQ', 'A2KLJKDG90K1PP', 'A30RAYNDOWQ61S', 'AOWW3URQNRJ6U',...
                      'AT6OT5K5Z4V0J', 'AV5FCKI1TTSKR', 'AXKTYKCT9NGHS', 'AZ9VWEDBI364C', 'A3LVLZS8S41ZD7'};
-            subj = [subj2];
+                 
+            subj3 = {'A23KAJRDVCVGOE','A3F5Z5S2AHMN2O','A1GRPIBHW72HDU','AMELYCC59JKB0','A3FY6THWKRYN9M',...
+                'A10249252O9I20MRSOBVF','A2PSR3CMNR1R9X','A68J20100VW4W','A235DXY5FJN0IW','AM65LGXJBTJ0I',...
+                'A2POU9TTW177VH','A311A0TCGNTFKK','AMIQGW2E3WYO4','A5P12YJP805RG','ABKPEX0E9W2HW','A2T1LNI80EPOQR',...
+                'A2J51BI7XS5ZYU','A2BJFAKOJRCPYJ','AW0MG225VXWCN','A7P3R1AIA4TVV','A1R1E7TZ9OHFIG','A3UPZ88FI1EJC',...
+                'AY7WPVKHVNBLG','A2ONILC0LZKG6Y','A1PLQGQ95NICAF','ALKQPW0O9C98N','A2YTO4EY3MNYAJ',...
+                'A1WJIRT360P5VB','AU34T9OMHN4Z4','A5DZDONM2Y082','A1UCB0D27PY623','A2ATBS6XTIZE89','AV22FQTJNBUZT','A358YR7MWC6LRH'};
+                 % 'A2NHFSO7GMM8QR'
+            subj = [subj3];
             nTrials = 560;
 
             startOfExp = 5;

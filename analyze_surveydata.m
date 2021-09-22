@@ -1,23 +1,23 @@
 function analyze_surveydata
 
 folder = 'survey_data/';
-A = readtable(strcat(folder, 'pilot4'));
+A = readtable(strcat(folder, 'pilot'));
 subj = table2cell(A(2:end,148))'; % get mturkIDs
 A = table2array(A(2:end,27:146)); % only the data
 if ~isempty(isnan(A))
     [r,c] = find(isnan(A));
     r = unique(r);
     A(r,:) = []; 
-    disp('subjects who didn`t do survey:')
-    size(r)
+    disp(strcat('subjects who didn''t do survey:',num2str(r)))
+   
 end
 % question table of contents
-% SCZ: 1-43
-% OCI-R: 44-61
-% PHQ-9: 62-70
-% SHAPs: 71-84
-% TEPS: 85-102
-% AMI: 103-120
+% SCZ: 1-43, higher - SCZ
+% OCI-R: 44-61, higher = OCD
+% PHQ-9: 62-70, higher = depression
+% SHAPs: 71-84, higher = low pleasure
+% TEPS: 85-102, higher = more positive
+% AMI: 103-120, higher = more apathy
 
 %% amend the reverse coding
 % SCZ: 26,27,28,30,31,34,37,39
@@ -36,7 +36,7 @@ A(:,recode_idx) = ~A(:,recode_idx);
 % SHAPs: 0-14, 1-2 is 1 and 3-4 is 0, high scores represent low pleasure,
 % >3 is abnormal (already reverse coded, higher rating indicates
 % more anhedonia)
-% TEPS: 25-120.add together
+% TEPS: 25-120, add together, more positive
 % AMI: 0-72, add scores (already reverse coded, higher rating indicated
 % more apathy)
 

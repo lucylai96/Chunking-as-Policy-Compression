@@ -1,4 +1,4 @@
-function data = analyze_rawdata(experiment)
+function data = analyze_rawdata(experiment, cutoff)
 
     %{
     Analyze raw jsPsych experiment data saved in .csv files
@@ -10,6 +10,7 @@ function data = analyze_rawdata(experiment)
     %}
 
     prettyplot;
+    if nargin==1; cutoff=0.4; end
 
     switch experiment
         case 'setsize_manip'
@@ -34,7 +35,6 @@ function data = analyze_rawdata(experiment)
             nTrials = 700;
             savepath = 'actionChunk_data.mat';
 
-            cutoff = 0.4;
             startOfExp = 4;  %change
             data.cutoff = cutoff;
             pcorr = zeros(length(subj),1);
@@ -117,7 +117,6 @@ function data = analyze_rawdata(experiment)
             nTrials = 480;
             savepath = 'data_manip_2.mat';
 
-            cutoff = 0;
             startOfExp = 5;
             data.cutoff = cutoff;
             pcorr = zeros(length(subj),1);
@@ -230,7 +229,6 @@ function data = analyze_rawdata(experiment)
             subj = [subj1 subj2 subj3];
             nTrials = 480;
 
-            cutoff = 0;
             startOfExp = 5;
             data.cutoff = cutoff;
             pcorr = zeros(length(subj),1);
@@ -353,7 +351,6 @@ function data = analyze_rawdata(experiment)
             subj = [subj3];
             nTrials = 560;
 
-            cutoff = 0;
             startOfExp = 5;
             data.cutoff = cutoff;
             pcorr = zeros(length(subj),1);

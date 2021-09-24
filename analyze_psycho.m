@@ -1,11 +1,6 @@
-function analyze_psycho(reward, complexity, data, survey)
+function analyze_psycho(reward, complexity, data)
 % dimensional trait and psychopathology analysis
-% called by "analysis_manip"
-
 % INPUT: data - behavioral data
-%        survey - survey data
-if nargin<4; load('survey_data.mat'); end
-if nargin<3; load('data_manip_3.mat'); end
 
 % question table of contents
 % SCZ: 1-43, higher - SCZ
@@ -14,80 +9,88 @@ if nargin<3; load('data_manip_3.mat'); end
 % SHAPs: 71-84, higher = low pleasure
 % TEPS: 85-102, higher = more pleasure
 % AMI: 103-120, higher = more apathy
-survey.teps = max(survey.teps)-survey.teps;
 
-exc = 11;
-data(exc) = []; reward(exc,:) = []; complexity(exc,:) = [];
-%% complexity (each block condition) vs survey score
+maxTEPS = 102;
+for i = 1:length(data)
+    data(i).survey.teps = maxTEPS - data(i).survey.teps;
+end
+
+%% unroll survey
+for i = 1:length(data)
+    survey.scz(i,:) = data(i).survey.scz;
+    survey.oci(i,:) = data(i).survey.oci;
+    survey.phq(i,:) = data(i).survey.phq;
+    survey.shaps(i,:) = data(i).survey.shaps;
+    survey.teps(i,:) = data(i).survey.teps;
+    survey.ami(i,:) = data(i).survey.ami;
+end
+
+%% reward and complexity (only baseline and random block condition) vs survey score
 survey_name = {'SCZ','OCI-R','PHQ-9','SHAPS','TEPS','AMI'};
 figure; hold on;
 fn = fieldnames(survey);
 for i = 1:length(fieldnames(survey))
     if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        plot(complexity(:,1:2),survey.(fn{i}),'.','MarkerSize',30); lsline;
-        for c = 1:2
-            [r(i,c),p(i,c)] = corr(complexity(:,c),survey.(fn{i}), 'Type', 'Pearson');
+        subplot(2,length(fn),i); hold on;
+        plot(survey.(fn{i}),complexity,'.','MarkerSize',30); lsline;
+        for c = 1:4
+            [r,p] = corr(survey.(fn{i}), complexity(:,c),'Type', 'Pearson');
+            x = xlim; y = ylim;
+            if p<0.05; text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14);
+                text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+            end
         end
-        xlabel('Policy Complexity')
-        ylabel('Score')
+        ylabel('Policy Complexity')
+        xlabel('Score')
         title(survey_name{i})
-    end
-end
-
-set(gcf, 'Position',  [0, 100, 1700, 250])
-%% complexity (all block conditions) vs survey score
-
-figure; hold on;
-fn = fieldnames(survey);
-for i = 1:length(fieldnames(survey))
-    if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        plot(complexity(:),repmat(survey.(fn{i}),size(complexity,2),1),'k.','MarkerSize',30); lsline;
-        [R(i),P(i)] = corr(complexity(:),repmat(survey.(fn{i}),size(complexity,2),1), 'Type', 'Pearson');
-        xlabel('Policy Complexity')
-        ylabel('Score')
-        title(survey_name{i})
-    end
-end
-
-set(gcf, 'Position',  [0, 300, 1700, 250])
-
-%% reward (each block condition) vs survey score
-survey_name = {'SCZ','OCI-R','PHQ-9','SHAPS','TEPS','AMI'};
-figure; hold on;
-fn = fieldnames(survey);
-for i = 1:length(fieldnames(survey))
-    if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        plot(reward(:,1:2),survey.(fn{i}),'.','MarkerSize',30); lsline;
-        for c = 1:2
-            [r(i,c),p(i,c)] = corr(reward(:,c),survey.(fn{i}), 'Type', 'Pearson');
+        
+        subplot(2,length(fn),i+length(fn)); hold on;
+        plot(survey.(fn{i}),reward,'.','MarkerSize',30); lsline;
+        for c = 1:4
+            [r,p] = corr(survey.(fn{i}),reward(:,c),'Type', 'Pearson');
+            x = xlim; y = ylim;
+            
+            if p<0.05; text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14);
+                text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+            end
         end
-        xlabel('Reward')
-        ylabel('Score')
-        title(survey_name{i})
+        ylabel('Reward')
+        xlabel('Score')
+        
     end
 end
 
-set(gcf, 'Position',  [0, 500, 1700, 250])
+set(gcf, 'Position',  [0, 100, 1700, 500])
 
-%% reward (all block conditions) vs survey score
-
+%% reward and complexity (all block conditions) vs survey score
 figure; hold on;
 fn = fieldnames(survey);
 for i = 1:length(fieldnames(survey))
     if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        plot(reward(:),repmat(survey.(fn{i}),size(reward,2),1),'k.','MarkerSize',30); lsline;
-        [R(i),P(i)] = corr(reward(:),repmat(survey.(fn{i}),size(reward,2),1), 'Type', 'Pearson');
-        xlabel('Reward')
-        ylabel('Score')
+        
+        subplot(2,length(fn),i); hold on;
+        plot(repmat(survey.(fn{i}),size(complexity,2),1),complexity(:),'k.','MarkerSize',30); lsline;
+        [r,p] = corr(repmat(survey.(fn{i}),size(complexity,2),1),complexity(:), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
+        ylabel('Policy Complexity'); title(survey_name{i})
+        
+        subplot(2,length(fn),i+length(fn)); hold on;
+        plot(repmat(survey.(fn{i}),size(reward,2),1),reward(:),'k.','MarkerSize',30); lsline;
+        [r,p] = corr(repmat(survey.(fn{i}),size(reward,2),1),reward(:), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
+        ylabel('Reward');xlabel('Score')
         title(survey_name{i})
     end
 end
 
-set(gcf, 'Position',  [0, 700, 1700, 250])
+set(gcf, 'Position',  [0, 300, 1700, 500])
+
 %% can scores predict manipulations?
 
 % prediction is that people who are reward insensitive (high on SHAPS, low
@@ -107,40 +110,61 @@ figure; hold on;
 fn = fieldnames(survey);
 for i = 1:length(fieldnames(survey))
     if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        h(1) = plot(survey.(fn{i}),load_manip(:,1),'.','MarkerSize',30); lsline;
-        [rr(i,1),pp(i,2)] = corr(load_manip(:,1),survey.(fn{i}), 'Type', 'Pearson');
-        
-        h(2) = plot(survey.(fn{i}),incentive_manip(:,1),'.','MarkerSize',30); lsline;
-        [rr(i,2),pp(i,2)] = corr(incentive_manip(:,1),survey.(fn{i}), 'Type', 'Pearson');
+        subplot(2,length(fn),i); hold on;
+        h(1) = plot(survey.(fn{i}),load_manip(:,1),'b.','MarkerSize',30); lsline;
+        [r,p] = corr(load_manip(:,1),survey.(fn{i}), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
         ylabel('\Delta Complexity')
-        xlabel('Score')
         title(survey_name{i})
+        
+        subplot(2,length(fn),i+length(fn)); hold on;
+        h(2) = plot(survey.(fn{i}),load_manip(:,2),'r.','MarkerSize',30); lsline;
+        [r,p] = corr(load_manip(:,2),survey.(fn{i}), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
+        ylabel('\Delta Reward')
+        xlabel('Score')
+        
     end
 end
-legend(h, {'\Delta Complexity_{L}','\Delta Complexity_{I}'})
-
-set(gcf, 'Position',  [0, 100, 1700, 250])
+sgtitle('Load Manipulation','FontSize',23)
+set(gcf, 'Position',  [0, 100, 1700, 500])
 
 figure; hold on;
 fn = fieldnames(survey);
 for i = 1:length(fieldnames(survey))
     if(isnumeric(survey.(fn{i})))
-        subplot(1,length(fn),i); hold on;
-        h(1) = plot(survey.(fn{i}),load_manip(:,2),'.','MarkerSize',30); lsline;
-        [rrr(i,1),ppp(i,2)] = corr(load_manip(:,2),survey.(fn{i}), 'Type', 'Pearson');
+        subplot(2,length(fn),i); hold on;
+        h(1) = plot(survey.(fn{i}),incentive_manip(:,1),'b.','MarkerSize',30); lsline;
+        [r,p] = corr(incentive_manip( :,1),survey.(fn{i}), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
+        ylabel('\Delta Complexity')
+        title(survey_name{i})
         
-        h(2) = plot(survey.(fn{i}),incentive_manip(:,2),'.','MarkerSize',30); lsline;
-        [rrr(i,2),ppp(i,2)] = corr(incentive_manip(:,2),survey.(fn{i}), 'Type', 'Pearson');
+        subplot(2,length(fn),i+length(fn)); hold on;
+        h(2) = plot(survey.(fn{i}),incentive_manip(:,2),'r.','MarkerSize',30); lsline;
+        [r,p] = corr(incentive_manip(:,2),survey.(fn{i}), 'Type', 'Pearson');
+        x = xlim; y = ylim;
+        text(x(1),y(2),strcat('R = ',num2str(r)),'FontSize',14)
+        if p<0.05; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14,'Color','r');
+        else; text(mean(x),y(2),strcat('p = ',num2str(p)),'FontSize',14); end
         ylabel('\Delta Reward')
         xlabel('Score')
-        title(survey_name{i})
+        
     end
 end
-legend(h, {'\Delta Reward_{L}','\Delta Reward_{I}'})
+sgtitle('Incentive Manipulation','FontSize',23)
 % scores vs reduction in ICRT
 
-set(gcf, 'Position',  [0, 100, 1700, 250])
+set(gcf, 'Position',  [0, 100, 1700, 500])
 
 %% change in reward vs change in complexity
 figure; hold on; subplot 121; hold on;

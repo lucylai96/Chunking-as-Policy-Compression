@@ -11,7 +11,7 @@ function policy_complexity_exp2()
 
 
     prettyplot;
-    load('load_incentive_data.mat'); % renamed to data_manip_2? (before we used modified freq discrimination)
+    load('data_manip_3.mat'); 
     nSubj = length(data);
     condition = {'random train', 'structured train', 'structured test, normal',...
                  'structured test, load', 'structured test, incentive', 'random test'};

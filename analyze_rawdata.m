@@ -217,8 +217,8 @@ function data = analyze_rawdata(experiment, cutoff)
             folder = 'experiment_manip/data/';
 
             % study 315509, released on August 26, with modified frequency discrimination
-            subj1 = {'A3RLCGRXA34GC0', 'A1KS9LITOVPAT8', 'AWAHIWLMQ0HUQ', 'A1IFIK8J49WBER', 'A38OPVI04AH4JG',...
-                'A1SMVF4MXT0RIH', 'A2M183CETUMR96', 'A1S9I3WF8GG4RG', 'A2OVX9UW5WANQE', 'AIHUIAQ4922K3'};
+            %subj1 = {'A3RLCGRXA34GC0', 'A1KS9LITOVPAT8', 'AWAHIWLMQ0HUQ', 'A1IFIK8J49WBER', 'A38OPVI04AH4JG',...
+                %'A1SMVF4MXT0RIH', 'A2M183CETUMR96', 'A1S9I3WF8GG4RG', 'A2OVX9UW5WANQE', 'AIHUIAQ4922K3'};
 
             % study 316537, released on Sept 1
             subj2 = {'A3774HPOUKYTX7','A3LL096CAY5WHB','A39VZ93N96XB6O','A19CB2C4GY4C60','AAF1SJ9FCBF75'};
@@ -226,7 +226,7 @@ function data = analyze_rawdata(experiment, cutoff)
             % study 316537, released on Sept 6
             subj3 = {'A1969Q0R4Y0E3J','A222R4PNCF08OF','A2QX3YJXAAHHVV','A5TWD5QD99GZY','AI5RMOS8R652G'};
 
-            subj = [subj1 subj2 subj3];
+            subj = [subj2 subj3];
             nTrials = 480;
 
             startOfExp = 5;
@@ -241,9 +241,9 @@ function data = analyze_rawdata(experiment, cutoff)
 
                 A = readtable(strcat(folder, subj{s}));
                 A = table2cell(A);
-                if s>10
+                %if s>10
                     A = A(:,[1:6,10:end]);
-                end
+                %end
 
                 corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
                 incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
@@ -262,9 +262,9 @@ function data = analyze_rawdata(experiment, cutoff)
             for s = 1:length(subj)
                 A = readtable(strcat(folder, subj{s}));
                 A = table2cell(A);
-                if s>10
+                %if s>10
                     A = A(:,[1:6,10:end]);
-                end
+                %end
 
                 corr = sum(strcmp(A(startOfExp:end, 16), 'true'));
                 incorr = sum(strcmp(A(startOfExp:end,16), 'false'));
@@ -326,6 +326,9 @@ function data = analyze_rawdata(experiment, cutoff)
             end
 
             data = rmfield(data, {'order'; 'chunk_order'});
+            
+            data = analyze_surveydata(data);
+            
             savepath = 'data_manip_3.mat';
             save(savepath, 'data');
 
@@ -348,7 +351,7 @@ function data = analyze_rawdata(experiment, cutoff)
                 'AY7WPVKHVNBLG','A2ONILC0LZKG6Y','A1PLQGQ95NICAF','ALKQPW0O9C98N','A2YTO4EY3MNYAJ',...
                 'A1WJIRT360P5VB','AU34T9OMHN4Z4','A5DZDONM2Y082','A1UCB0D27PY623','A2ATBS6XTIZE89','AV22FQTJNBUZT','A358YR7MWC6LRH'};
                  % 'A2NHFSO7GMM8QR'
-            subj = [subj3];
+            subj = [subj2 subj3];
             nTrials = 560;
 
             startOfExp = 5;
@@ -449,7 +452,12 @@ function data = analyze_rawdata(experiment, cutoff)
             end
 
             data = rmfield(data, {'order'; 'chunk_order'});
+            
+            data = analyze_surveydata(data);
+            
             savepath = 'data_probabilistic.mat';
             save(savepath, 'data');
+            
+            
     end
 end

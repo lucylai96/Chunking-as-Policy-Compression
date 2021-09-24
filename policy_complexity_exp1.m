@@ -14,7 +14,6 @@ function policy_complexity_exp1(plotCase, data)
     Input: "plotCase" is a string representing which plot to show; data is
     an optional input and can be the simulated data structure
 
-
     Called by: plot_all_figures()
     %}
 

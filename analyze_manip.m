@@ -1,17 +1,18 @@
 function analyze_manip(data)
 
 prettyplot;
-if nargin<1; load('data_manip_3.mat'); end
+if nargin<1; load('data_probabilistic.mat'); datafile = 'data_probabilistic.mat'; end
+%if nargin<1; load('data_manip_3.mat'); datafile = 'data_manip_3.mat'; end
 nSubj = length(data);
 threshold = 0.4;   % lowest accuracy in each block
 
 condition = {'random', 'structured_normal', 'structured_load', 'structured_incentive'};
-Xlabel =     {'Random', 'Structured Baseline', 'Structured Load', 'Structured Incentive'};
+Xlabel =     {'Random', 'Baseline', 'Load', 'Incentive'};
 bmap = [190 190 190
         0 0 0
         70 130 180
         60 179 113]/255;
-
+    
 %% Average Accuracy
 
 acc = nan(nSubj, length(condition));
@@ -179,7 +180,7 @@ xlabel('Block'); ylabel('Normalized ICRT');
 %% Policy-complexity in different blocks
 
 recode = 1;   
-maxReward = [120 120 120 120];
+maxReward = [140 140 140 140];
 [reward, complexity] = calculateRPC(data, condition, recode, maxReward);
 sem = nanstd(complexity,1)/sqrt(nSubj);
 
@@ -193,7 +194,8 @@ errorbar(X, mean(complexity,1), sem, sem, 'k','linestyle','none', 'lineWidth', 1
 set(gca, 'XTick',X, 'XTickLabel', Xlabel);
 xlabel('Block'); ylabel('Average Policy Complexity');
 
-
+%% Psychometric analyses
+analyze_psycho(reward, complexity, data)
 
 %% Reward-complexity curve
 %figure; hold on;
@@ -247,8 +249,5 @@ figure; hold on;
 plot(complexity(:,1), allRT(:,1), '.','MarkerSize',30)
 xlabel('Policy Complexity')
 ylabel('Reaction Time (ms)')
-
-%% Psychometric data
-analyze_psycho(reward, complexity, data); %plots correlation between [policy complexity
 
 end

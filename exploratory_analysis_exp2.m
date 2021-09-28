@@ -13,7 +13,7 @@ function exploratory_analysis_exp2(plotCase, data)
     %}
 
     prettyplot;
-    if nargin<2; load('load_incentive_data.mat'); end
+    if nargin<2; load('data_manip_3.mat'); end
     nSubj = length(data);
     threshold = 0.4;   % lowest accuracy in each block
     condition = {'structured_normal', 'structured_load', 'structured_incentive'};

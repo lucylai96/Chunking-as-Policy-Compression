@@ -147,7 +147,7 @@ function exploratory_analysis_exp1(plotCase, data)
             
             %  beta vs icrt and beta vs increase from structured to random test
             load('matlab_data/model_fitting_all.mat')
-            beta = results(4).x(:,1);
+            beta = results(3).x(:,1);
             %beta = results(4).x(:,1);
             figure; hold on;
             subplot 121; hold on;
@@ -155,14 +155,13 @@ function exploratory_analysis_exp1(plotCase, data)
             plot(beta,rtChunkCorr(:,5)-rtChunkCorr(:,6),'.','MarkerSize', 30) % Ns = 6, chunking (reduction in ICRT from random to structured train) vs beta (higher beta less chunking)
             lsline;
        
-            xlabel('\beta')
+             xlabel('\beta')
             ylabel('Reduction in ICRT (ms, Random-Structured)')
                  subplot 122; hold on;
-            %plot(beta,rtChunkCorr(:,4)-rtChunkCorr(:,3),'.','MarkerSize', 30) % Ns = 4, increase from structured to random test vs beta 
+            plot(beta,rtChunkCorr(:,4)-rtChunkCorr(:,3),'.','MarkerSize', 30) % Ns = 4, increase from structured to random test vs beta (should be 
             plot(beta,rtChunkCorr(:,8)-rtChunkCorr(:,7),'.','MarkerSize', 30) % Ns = 6, increase from structured to random test vs beta (should be less increase with higher beta)
             xlabel('\beta')
             ylabel('Increase in ICRT (ms, Structured-Random)')
-            lsline;
             % fit beta separately for different conditions?
             why
 

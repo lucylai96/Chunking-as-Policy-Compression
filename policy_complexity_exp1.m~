@@ -79,7 +79,7 @@ plot(complexity(:,7)-complexity(:,8),(rtChunkCorr(:,7)./avgRT(:,7))-(rtChunkCorr
 xlabel('Increase in Policy Complexity (Structured-Random)')
 ylabel('Increase in Normalized ICRT (Structured-Random)')
 legend('Ns = 4','Ns = 6')
-title('Test')
+
 lsline;
 
 % load('matlab_data/model_fitting_all.mat')

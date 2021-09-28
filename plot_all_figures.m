@@ -25,7 +25,7 @@ function plot_all_figures(experiment)
                 exploratory_analysis_exp1('intrachunkRT')       % ICRT
                 
                 policy_complexity_exp1("avgComplexity")         % average complexity    
-                policy_complexity_exp1("RC_curves")             % reward-complexity curves
+                %policy_complexity_exp1("RC_curves")             % reward-complexity curves
                 policy_complexity_exp1("rainCloud_complexity")  % complexity distribution
                 
                 plotBIC()                                       % model fitting result shown by BIC

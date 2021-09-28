@@ -3,11 +3,11 @@ var instructions = {
   pages: [
     // Welcome (page 1)
     '<p class="center-content">Welcome to the experiment!</p>' +
-    '<p class="center-content">You will earn $2 plus a performance-dependent bonus of $0-8 (including a survey) for completing this HIT.</p>' +
+    '<p class="center-content">You will earn $4 plus a performance-dependent bonus of $0-9 (including a survey) for completing this HIT.</p>' +
     '<p class="center-content">Press "Next" to view the instructions.</p>',
 
     // Instructions (page 2)
-    '<p class="center-content">Imagine you are a photographer, trying to capture the beauty in every sparkling moment you see. </p>' +
+    '<p class="center-content">Imagine you are a photographer, trying to capture the beauty in every sparking moment you see. </p>' +
     '<p class="center-content">Each time you take a picture, you will decide which buttons to press on the camera</p>' +
     '<p class="center-content">to adjust the parameters and create the best photo.  </p>',
 
@@ -22,7 +22,7 @@ var instructions = {
     '<img src="img/fingerPosition.png" style="width: 600px;">',
 
 
-    '<p class="center-content">This experiment is consisted of 3 blocks, with 180 trials in each block. </p>' +
+    '<p class="center-content">This experiment is consisted of 4 blocks, with 120 trials in each block. </p>' +
     '<p class="center-content">Different blocks will present different set of pictures. </p>' +
     '<p class="center-content">You may see block-specific instructions at the beginning of each block. </p>', 
 
@@ -119,6 +119,31 @@ function create_incentive_instructions(set_num, chunk_rare, outChunk){
   return instructions;
 }
 
+
+function create_load_instructions(set_num, freq_order){
+  var instructions = {
+  type: 'instructions',
+  pages: [
+    '<p class="center-content">This block is associated with block-specific rules. </p>'+
+    '<p class="center-content"><b>You will need to count the occurrences of the following two pictures during the task,</b>  </p>'+
+    '<p class="center-content"><b>and indicate which picture has higher frequency after you finish this block. </p>' +
+    '<p class="center-content"><b>You will obtain a monetary bonus of $2 for selecting the correct answer. </b> </p>' +  
+    '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:600px;"><tr>' +
+    '<td><img src="img/set' +set_num+ '/S' +freq_order[0]+ '.jpg" style="width: 250px; height: 170px"></td>' +
+    '<td><img src="img/set' +set_num+ '/S' +freq_order[1]+ '.jpg" style="width: 250px; height: 170px"></td>' +
+    '</tr><tr>' +
+    '</tr></table>',
+   
+    '<p class="center-content">You will still need to respond as fast and accurately as possible to obtain more performance-based bonus.  </p>' +
+    '<p class="center-content">Please click "Next" to start.</p>',
+    ],
+  show_clickable_nav: true,
+  allow_backward: true,
+  show_page_number: true
+  }
+return instructions;
+
+}
 
 
 

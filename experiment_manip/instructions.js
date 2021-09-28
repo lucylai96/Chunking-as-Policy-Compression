@@ -1,17 +1,15 @@
 var instructions = {
   type: 'instructions',
   pages: [
-    // Welcome (page 1)
+
     '<p class="center-content">Welcome to the experiment!</p>' +
     '<p class="center-content">You will earn $4 plus a performance-dependent bonus of $0-9 (including a survey) for completing this HIT.</p>' +
     '<p class="center-content">Press "Next" to view the instructions.</p>',
 
-    // Instructions (page 2)
     '<p class="center-content">Imagine you are a photographer, trying to capture the beauty in every sparking moment you see. </p>' +
     '<p class="center-content">Each time you take a picture, you will decide which buttons to press on the camera</p>' +
     '<p class="center-content">to adjust the parameters and create the best photo.  </p>',
 
-    // Instructions (page 3)
     '<p class="center-content">In this experiment, you will learn which key to press in response to each picture that appears on the screen.  </p>' +
     '<p class="center-content">You want to press the correct key as fast as possible, to capture the fleeting moment that would give the best picture.  </p>' +
     '<p class="center-content"><b>You will obtain monetary reward based on both how accurate and how fast your responses are. </b> </p>' ,

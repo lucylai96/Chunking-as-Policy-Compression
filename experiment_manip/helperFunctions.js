@@ -1,4 +1,4 @@
-// between block instructions
+// between block instructions.
 var between_block = {
     type: 'html-keyboard-response',
     stimulus: [

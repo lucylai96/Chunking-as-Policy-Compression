@@ -1,4 +1,4 @@
-// Chunking as Policy Compression in Stimulus-Response Task
+// Chunking as Policy Compression in Stimulus-Response Task.
 var label = ['random', 'structured_normal', 'structured_load', 'structured_incentive'];
 label = shuffle(label);
 //label = ['random'].concat(label);

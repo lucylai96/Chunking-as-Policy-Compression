@@ -1,4 +1,4 @@
-// between block instructions.
+// between block instructions
 var between_block = {
     type: 'html-keyboard-response',
     stimulus: [
@@ -17,80 +17,6 @@ var fixation = {
     choices: jsPsych.NO_KEYS,
     trial_duration: 0 // ms
   };
-
-
-function create_occurence_survey(num, order){
-  var multi_choice = {
-    type: 'survey-multi-choice',
-    questions: [
-    {prompt: 
-      '<p class="center-content">Which of the two pictures below appeared more often in this block? </p>' +
-      '<table style="margin-left:auto;margin-right:auto;table-layout:fixed !important; width:580px;"><tr>' +
-      '<td><img src="img/set' +num+ '/S' +order[0]+ '.jpg" style="width: 220px; height: 150px"></td>' +
-      '<td><img src="img/set' +num+ '/S' +order[1]+ '.jpg" style="width: 220px; height: 150px"></td>' +
-      '</tr><tr>' +
-      '<td>Picture A</td><td>Picture B</td>' +
-      '</tr></table>',
-      options: ["Picture A", "Picture B", "They had the same number of occurrences"]
-      }],
-    };
-  return multi_choice;
-}
-
-function create_occurence_feedback(freq_order, stateDist){
-  var freq_discr_feedback = {
-    type: 'html-keyboard-response',
-    stimulus: function(){
-    var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
-    var response = prev_trial.select('responses').values[0];
-    if (stateDist[freq_order[0]] > stateDist[freq_order[1]]){
-      var isCorrect = response === "Picture A";
-    }
-    else if (stateDist[freq_order[0]] < stateDist[freq_order[1]]){
-      var isCorrect = response === "Picture B";
-    }
-    else{
-      var isCorrect = response === "They had the same number of occurrences";
-    }
-
-    if (isCorrect){
-      return ['<p class="center-content">Congratulations, you selected the correct answer! </p>'+
-        '<p class="center-content">A bonus of $2 has been assigned to you. </p>'+ 
-        '<p class="center-content">You will know the total amount of your performance-based bonus at the end of the task. </p>' +
-        '<p class="center-content">Please press any key to continue. </p>' ];
-    }
-    else{
-      return ['<p class="center-content">Underfortunately, the answer you selected was not correct. </p>'+
-        '<p class="center-content">Please press any key to continue. </p>'];
-    }
-  },
-  stimulus_duration: 20000,
-  trial_duration: 20000
-  }
-  return freq_discr_feedback;
-}
-
-
-function bonus_freq_discr(freq_order, stateDist){
-  var prev_trial = jsPsych.data.getDataByTimelineNode(trial_node_id);
-  var response = prev_trial.select('responses').values[0];
-  if (stateDist[freq_order[0]] > stateDist[freq_order[1]]){
-    var isCorrect = response === "Picture A";
-  }
-  else if (stateDist[freq_order[0]] < stateDist[freq_order[1]]){
-    var isCorrect = response === "Picture B";
-  }
-  else{
-    var isCorrect = response === "They had the same number of occurrences";
-  }
-
-  if (isCorrect){
-    return 2;
-  }
-  else{
-    return 0;
-  }
-}
 
 
 function pushFeedback(num, block, chunk_rare, timeline){
@@ -132,7 +58,7 @@ function pushTrials(set, num, block, chunk_rare, timeline){
       data.correct = data.key_press == data.correct_response;
       trial_node_id = jsPsych.currentTimelineNodeID();
       var curr_progress_bar_value = jsPsych.getProgressBarCompleted();
-      jsPsych.setProgressBar(curr_progress_bar_value + (1/560));
+      jsPsych.setProgressBar(curr_progress_bar_value + (1/540));
     }
   }
   timeline.push(trial);
@@ -147,19 +73,19 @@ function pushBlocks(timeline, set, condition, chunk_freq, chunk_rare){
   // chunk tells us the structure of the chunk
   if (condition=='random'){
     var probs = [1, 1, 1, 1];
-    var mult = SJS.Multinomial(140, probs);
+    var mult = SJS.Multinomial(180, probs);
     var stateDist = mult.draw();
     stateDist = stateDist.concat([0, 0]);
   }
   else{
-    var mult_primitive = SJS.Multinomial(140, [1, 1, 1, 1]);
+    var mult_primitive = SJS.Multinomial(180, [1, 1, 1, 1]);
     var stateDist_primitive = mult_primitive.draw();
-    var mult_chunk_transition = SJS.Multinomial(35, [4, 1]);
+    var mult_chunk_transition = SJS.Multinomial(45, [4, 1]);
     var stateDist_chunk_transition = mult_chunk_transition.draw();
-    var stateDist = [35,35,35,35].concat(stateDist_chunk_transition);
+    var stateDist = [45,45,45,45].concat(stateDist_chunk_transition);
     stateDist[chunk_freq[0]-1] = 0;
-    stateDist[chunk_freq[1]-1] = 35 - stateDist_chunk_transition[0];
-    stateDist[chunk_rare[1]-1] = 35 - stateDist_chunk_transition[1];
+    stateDist[chunk_freq[1]-1] = 45 - stateDist_chunk_transition[0];
+    stateDist[chunk_rare[1]-1] = 45 - stateDist_chunk_transition[1];
   }
 
   console.log(condition + ":" + stateDist);
@@ -195,8 +121,8 @@ function find_outChunk(chunk){
   if (chunk[0]==2 && chunk[1]==4){
     return [1,3]; 
   }
-  else if (chunk[0]==1 && chunk[1]==4){
-    return [3,2];
+  else if (chunk[0]==1 && chunk[1]==3){
+    return [4,2];
   }
   else if (chunk[0]==4 && chunk[1]==3){
     return [2,1];
@@ -244,14 +170,14 @@ function saveData(name, data) {
 
 
  // Calculate bonus at end
-function create_bonus_page(freq_order, stateDist){
+function create_bonus_page(){
   var bonus_block = {
     type: 'instructions',
     pages: function() {
-      var correct_bonus = Math.round(60 * jsPsych.data.get().filter({correct: true}).count() / 480); 
-      correct_bonus = 0.1 * correct_bonus + bonus_freq_discr(freq_order, stateDist);
+      var correct_bonus = Math.round(60 * jsPsych.data.get().filter({correct: true}).count() / 540); 
+      correct_bonus = 0.1 * correct_bonus + 2;
       jsPsych.data.addDataToLastTrial({"bonus": correct_bonus});
-      return ['<p class="center-content">You won a bonus of <b>$' + (correct_bonus == 1 ? '9.00' : correct_bonus) + '</b>.</p>' +
+      return ['<p class="center-content">You won a bonus of <b>$' + correct_bonus + '</b>.</p>' +
       '<p class="center-content"> IMPORTANT: <b>Press "Next"</b> to continue to the survey questions.</p>'];
     },
     show_clickable_nav: true,
@@ -298,7 +224,7 @@ function create_bonus_page(freq_order, stateDist){
     allow_backward: false,
     show_page_number: false,
     on_finish: function(data) {
-    window.location.href = "https://harvard.az1.qualtrics.com/jfe/form/SV_0kwdhI6iH5OSrBA/?&workerId=" + turkInfo.workerId + "&assignmentId=" + turkInfo.assignmentId + "&hitId=" + turkInfo.hitId;
+    window.location.href = "https://harvard.az1.qualtrics.com/jfe/form/SV_8670t1ehdz4CcPs/?&workerId=" + turkInfo.workerId + "&assignmentId=" + turkInfo.assignmentId + "&hitId=" + turkInfo.hitId;
      },
                        
   };
